@@ -1,4 +1,4 @@
-const CACHE_NAME = 'carerisk-v1.0.1'; // 👈 C'est la modification clé !
+const CACHE_NAME = 'carerisk-v1.0.2'; // 👈 C'est la modification clé !
 const urlsToCache = [
   './',
   './index.html',
