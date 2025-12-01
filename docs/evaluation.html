@@ -3,63 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nouvelle Évaluation - CareRisk</title>
+    <title>Fiche Patient et Évaluation - CareRisk</title>
+    <!-- Inclure Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Styles supplémentaires -->
     <link rel="stylesheet" href="style.css"> 
 </head>
 <body class="bg-gray-50 min-h-screen">
 
+    <!-- Section de la Barre de Navigation (Entête) -->
     <header class="bg-white shadow-md">
         <div class="container mx-auto p-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold text-gray-800">CareRisk</h1>
+            <!-- Bouton de retour vers le tableau de bord -->
             <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium">
                 ← Retour au Tableau de Bord
             </a>
         </div>
     </header>
 
+    <!-- Conteneur Principal pour le Patient et les Évaluations -->
     <main class="container mx-auto p-8">
         
-        <h2 class="text-3xl font-semibold text-gray-700 mb-6">Nouvelle Évaluation des Risques</h2>
+        <h2 class="text-3xl font-semibold text-gray-700 mb-6 border-b pb-2">Fiche Patient : [Nom et Prénom du Patient]</h2>
         
-        <div class="bg-white p-6 rounded-lg shadow-lg">
+        <!-- Informations de base du patient (Simulées) -->
+        <div class="bg-indigo-50 p-4 rounded-lg shadow-md mb-8">
+            <p class="font-bold text-indigo-700">Identifiant : 12345</p>
+            <p class="text-indigo-700">Âge : 78 ans | Localisation : Chambre 205</p>
+        </div>
+
+        <!-- Formulaire de Gestion des Risques (Utilise des menus déroulants pour simuler la sélection de données pré-existantes) -->
+        <form id="risk-management-form">
             
-            <form id="risk-assessment-form">
+            <!-- SECTION : Risque de Chutes -->
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <h3 class="text-xl font-bold text-red-600 mb-4">🔴 Gestion du Risque de Chutes</h3>
                 
                 <div class="mb-4">
-                    <label for="patient-name" class="block text-gray-700 font-medium mb-2">Nom du Patient</label>
-                    <input type="text" id="patient-name" name="patient-name" required 
+                    <label for="chutes-historique" class="block text-gray-700 font-medium mb-2">Historique de Chutes (6 derniers mois)</label>
+                    <select id="chutes-historique" name="chutes-historique" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                        <option value="data-0">Aucune chute enregistrée</option>
+                        <option value="data-1">1 chute récente (Risque Léger)</option>
+                        <option value="data-2">Chutes récurrentes (>2) (Risque Élevé)</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="chutes-mobilite" class="block text-gray-700 font-medium mb-2">Statut de Mobilité actuel</label>
+                    <select id="chutes-mobilite" name="chutes-mobilite" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                        <option value="data-0">Autonome</option>
+                        <option value="data-1">Nécessite aide technique (canne)</option>
+                        <option value="data-2">Assistance totale (fauteuil/transfert)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SECTION : Risque d'Escarres (Cutané & Nutritionnel) -->
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <h3 class="text-xl font-bold text-blue-600 mb-4">🔵 Gestion du Risque d'Escarres</h3>
+                
+                <div class="mb-4">
+                    <label for="escarres-nutrition" class="block text-gray-700 font-medium mb-2">Statut Nutritionnel (Perte de poids)</label>
+                    <select id="escarres-nutrition" name="escarres-nutrition" required 
                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="data-0">Normale (Aucun risque)</option>
+                        <option value="data-1">Dénutrition légère/modérée (Risque Modéré)</option>
+                        <option value="data-2">Dénutrition sévère (Risque Élevé)</option>
+                    </select>
                 </div>
-
-                <div class="mb-6">
-                    <label class="block text-gray-700 font-medium mb-2">Risque de chute élevé ?</label>
-                    <div class="mt-2">
-                        <label class="inline-flex items-center">
-                            <input type="radio" class="form-radio text-blue-600" name="risk-fall" value="yes" required>
-                            <span class="ml-2">Oui</span>
-                        </label>
-                        <label class="inline-flex items-center ml-6">
-                            <input type="radio" class="form-radio text-blue-600" name="risk-fall" value="no">
-                            <span class="ml-2">Non</span>
-                        </label>
-                    </div>
+                
+                <div class="mb-4">
+                    <label for="escarres-plaies" class="block text-gray-700 font-medium mb-2">État de l'Intégrité Cutanée</label>
+                    <select id="escarres-plaies" name="escarres-plaies" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="data-0">Peau intacte</option>
+                        <option value="data-1">Rougeur persistante (Stade 1)</option>
+                        <option value="data-2">Plaie ouverte (Stade 2 ou plus)</option>
+                    </select>
                 </div>
+            </div>
 
-                <button type="submit" 
-                        class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition duration-200 font-semibold">
-                    Calculer le Score de Risque
-                </button>
-            </form>
+            <!-- SECTION : Risque d'Infection -->
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <h3 class="text-xl font-bold text-green-600 mb-4">🟢 Gestion du Risque d'Infection</h3>
+                
+                <div class="mb-4">
+                    <label for="infection-dispositif" class="block text-gray-700 font-medium mb-2">Présence de dispositifs invasifs</label>
+                    <select id="infection-dispositif" name="infection-dispositif" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="data-0">Aucun</option>
+                        <option value="data-1">Présent (Sonde ou Cathéter)</option>
+                        <option value="data-2">Multiples dispositifs (Risque Élevé)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Bouton de Soumission pour mettre à jour tous les risques -->
+            <button type="submit" 
+                    class="w-full bg-indigo-600 text-white py-4 rounded-lg hover:bg-indigo-700 transition duration-200 font-semibold text-lg mt-6">
+                Mettre à Jour et Calculer les Scores de Risque
+            </button>
             
-        </div>
+            <!-- Zone pour afficher les résultats du score (initialement cachée) -->
+            <div id="result-display" class="mt-8 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 hidden">
+                <p class="font-bold">Score de Risque Total calculé : <span id="total-score" class="text-2xl">0</span></p>
+                <p id="risk-recommendation" class="mt-2 text-sm"></p>
+            </div>
+            
+        </form>
     </main>
 
+    <!-- Inclure le Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
         }
     </script>
-    </body>
+    <!-- Inclure le script pour le calcul des scores -->
+    <script src="evaluation-logic.js"></script> 
+</body>
 </html>
