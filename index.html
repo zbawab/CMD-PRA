@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareRisk - Tableau de Bord</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="images/icon-192.png">
+    <meta name="theme-color" content="#5D5CDE">
+</head>
+<body class="bg-gray-50">
+
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-[#5D5CDE] mb-2">CareRisk</h1>
+            <p class="text-gray-500">Tableau de Bord - Gestion des Évaluations</p>
+        </header>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border-l-4 border-blue-500 cursor-pointer">
+                <i class="fas fa-plus-circle text-blue-500 text-3xl mb-3"></i>
+                <h2 class="text-xl font-bold text-gray-800 mb-1">Nouvelle Évaluation</h2>
+                <p class="text-sm text-gray-600">Commencer l'évaluation des risques pour un nouveau patient.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border-l-4 border-green-500 cursor-pointer">
+                <i class="fas fa-history text-green-500 text-3xl mb-3"></i>
+                <h2 class="text-xl font-bold text-gray-800 mb-1">Historique & Suivi</h2>
+                <p class="text-sm text-gray-600">Consulter les scores de risques précédents et les plans de soins.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border-l-4 border-purple-500 cursor-pointer">
+                <i class="fas fa-book-medical text-purple-500 text-3xl mb-3"></i>
+                <h2 class="text-xl font-bold text-gray-800 mb-1">Protocoles</h2>
+                <p class="text-sm text-gray-600">Accéder aux protocoles standard et aux fiches techniques.</p>
+            </div>
+
+        </div>
+
+        <div class="text-center mt-12">
+            <button id="installButton" class="bg-[#5D5CDE] text-white px-8 py-3 rounded-lg shadow-md hover:bg-[#4a49c4] transition-colors font-medium" style="display: none;">
+                Installer CareRisk (PWA)
+            </button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    
+    <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        // Le chemin est déjà correct : /sw.js
+        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, function(err) {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+    </script>
+</body>
+</html>
