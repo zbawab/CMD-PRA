@@ -68,10 +68,8 @@ const nouvelleEvaluationCard = document.querySelector('.border-blue-500');
 // 2. Ajouter un écouteur d'événement
 if (nouvelleEvaluationCard) {
     nouvelleEvaluationCard.addEventListener('click', () => {
-        // Alerte pour confirmer que le bouton fonctionne
-        alert('Action: Nouvelle Évaluation démarrée ! (Cette alerte sera remplacée par le formulaire)');
-        
-        // FUTURE ÉTAPE : Remplacer l'alerte par le code de navigation ou l'affichage du formulaire
+        // Nous demandons au navigateur d'aller à la page evaluation.html
+        window.location.href = 'evaluation.html'; 
     });
 }
 
