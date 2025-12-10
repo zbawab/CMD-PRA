@@ -1281,5 +1281,40 @@
             loadCarePlans();
         });
     </script>
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    const dashboardContainer = document.querySelector('.container');
+
+    function showDashboard(user){
+        if (loginForm) loginForm.style.display = 'none';
+        if (dashboardContainer) dashboardContainer.style.opacity = '1';
+    }
+    window.logout = function() {
+        localStorage.removeItem('carerisk_user');
+        window.location.reload();
+    }
+    const user = JSON.parse(localStorage.getItem('carerisk_user') || 'null');
+    if(user && user.fullname && user.email && user.service){
+        showDashboard(user);
+    }else{
+        if (dashboardContainer) dashboardContainer.style.opacity = '0.2';
+    }
+    if(loginForm){
+        loginForm.addEventListener('submit', function(e){
+            e.preventDefault();
+            const fullname = document.getElementById('fullname').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const service = document.getElementById('service').value;
+            if(!fullname || !email || !service) {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
+            localStorage.setItem('carerisk_user', JSON.stringify({fullname, email, service}));
+            showDashboard({fullname, email, service});
+        });
+    }
+});
+</script>
 </body>
 </html>
