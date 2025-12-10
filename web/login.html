@@ -3,55 +3,40 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Carerisk - Connexion</title>
-  <link rel="stylesheet" href="/web/styles.css">
+  <title>Connexion - CARERISK</title>
+  <link rel="stylesheet" href="/web/styles.css" />
 </head>
 <body>
   <header class="site-header">
-    <img src="/web/assets/header.png" alt="CMD Header" class="header-image" />
+    <img src="/web/assets/header.png" alt="CMD - CARERISK" />
+    <h1>Connexion — CARERISK (Prototype)</h1>
   </header>
 
   <main class="container">
-    <h1>Connexion - Carerisk</h1>
-    <form id="loginForm" class="card">
+    <form id="loginForm">
       <label>Nom complet
-        <input type="text" id="fullname" required>
+        <input type="text" id="fullname" required placeholder="Prénom Nom" />
       </label>
 
-      <label>Compte mail CMD
-        <input type="email" id="email" placeholder="ex: nom@cmd.cd" required>
+      <label>Email CMD
+        <input type="email" id="email" required placeholder="votre@cmd.cd" />
       </label>
 
       <label>Service
-        <select id="service" required>
-          <option value="">-- Sélectionnez le service --</option>
-          <option>Hospitalisation médecine</option>
-          <option>Hospitalisation chirurgie</option>
-          <option>Pédiatrie</option>
-          <option>Maternité</option>
-          <option>Soins intensifs</option>
+        <select id="service">
+          <option value="medicine">Médecine</option>
+          <option value="surgery">Chirurgie</option>
+          <option value="pediatrics">Pédiatrie</option>
+          <option value="icu">Réanimation</option>
         </select>
       </label>
 
-      <div class="actions">
-        <button type="submit">Se connecter</button>
-      </div>
+      <button type="submit">Se connecter</button>
     </form>
+
+    <p class="note">Prototype: authentification locale (stockée en localStorage). Intégrer l'authentification réelle avant production.</p>
   </main>
 
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e){
-      e.preventDefault();
-      const fullname = document.getElementById('fullname').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const service = document.getElementById('service').value;
-      if(!fullname || !email || !service) return alert('Veuillez remplir tous les champs.');
-
-      // Save user in localStorage (simple session)
-      const user = { fullname, email, service };
-      localStorage.setItem('carerisk_user', JSON.stringify(user));
-      window.location.href = '/web/plan.html';
-    });
-  </script>
+  <script src="/web/plan.js"></script>
 </body>
 </html>

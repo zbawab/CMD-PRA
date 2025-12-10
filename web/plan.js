@@ -1,83 +1,93 @@
-// Simple client logic to render reports and handle PDF export
-(function(){
-  const user = JSON.parse(localStorage.getItem('carerisk_user') || 'null');
-  if(!user){ window.location.href = '/web/login.html'; return; }
+// Prototype client-side logic for CARERISK evolutions
+// - stores a simple "session" in localStorage
+// - renders sample care plans
+// - restricts deletion to admin (zbawab@cmd.cd)
 
-  document.getElementById('userInfo').textContent = user.fullname + ' — ' + user.email + ' — ' + user.service;
-  document.getElementById('logoutBtn').addEventListener('click', ()=>{ localStorage.removeItem('carerisk_user'); window.location.href = '/web/login.html'; });
+const ADMIN_EMAIL = 'zbawab@cmd.cd';
 
-  const reportsEl = document.getElementById('reportsList');
-  const downloadBtn = document.getElementById('downloadAll');
+function getSession(){
+  try{ return JSON.parse(localStorage.getItem('carerisk_session')) || null }catch(e){return null}
+}
 
-  async function loadReports(){
-    try{
-      // Call backend API to get reports for this service
-      const res = await fetch('/api/reports?service=' + encodeURIComponent(user.service), { headers: { 'x-user-email': user.email } });
-      const data = await res.json();
-      renderReports(data);
-    }catch(err){
-      reportsEl.innerHTML = '<p class="error">Impossible de charger les rapports. (Simulé si pas de backend)</p>';
-      // fallback: show demo report
-      renderReports([{
-        id: 'demo-1', patient: 'Patient Demo', category: 'Prévention chutes', content: 'Plan de soins démo', service: user.service
-      }]);
-    }
-  }
+function setSession(session){
+  localStorage.setItem('carerisk_session', JSON.stringify(session));
+}
 
-  function renderReports(list){
-    reportsEl.innerHTML = '';
-    list.forEach(r => {
-      const card = document.createElement('article');
-      card.className = 'report-card';
-      card.id = 'report-' + r.id;
-
-      card.innerHTML = `
-        <div class="report-header">
-          <h2 class="plan-category-title">${escapeHtml(r.category || 'Plan de soins')}</h2>
-          <div class="meta">Patient: ${escapeHtml(r.patient || '')} — Service: ${escapeHtml(r.service || '')}</div>
-        </div>
-        <div class="report-body">${escapeHtml(r.content || '')}</div>
-        <div class="report-actions">
-          <button class="download" data-id="${r.id}">Télécharger (PDF)</button>
-        </div>
-      `;
-
-      // If admin allow delete
-      if(user.email === 'zbawab@cmd.cd'){
-        const del = document.createElement('button');
-        del.textContent = 'Supprimer';
-        del.addEventListener('click', ()=> deleteReport(r.id));
-        card.querySelector('.report-actions').appendChild(del);
-      }
-
-      card.querySelector('.download').addEventListener('click', ()=> downloadSingle(r.id));
-
-      reportsEl.appendChild(card);
-    });
-  }
-
-  function escapeHtml(s){ return String(s).replace(/[&<>\"']+/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
-
-  async function deleteReport(id){
-    if(!confirm('Confirmer la suppression ?')) return;
-    try{
-      const res = await fetch('/api/plans/' + encodeURIComponent(id), { method: 'DELETE', headers: { 'x-user-email': user.email } });
-      if(res.ok){ document.getElementById('report-' + id).remove(); alert('Supprimé'); }
-      else alert('Échec suppression');
-    }catch(err){ alert('Erreur réseau'); }
-  }
-
-  function downloadSingle(id){
-    const el = document.getElementById('report-' + id);
-    if(!el) return alert('Rapport introuvable');
-    html2pdf().from(el).set({ margin: 10, filename: 'plan-' + id + '.pdf', html2canvas: { scale: 2 } }).save();
-  }
-
-  downloadBtn.addEventListener('click', ()=>{
-    const el = document.querySelector('#reportsList');
-    if(!el) return alert('Rien à exporter');
-    html2pdf().from(el).set({ margin: 10, filename: 'plans-' + (user.service || 'service') + '.pdf', html2canvas: { scale: 2 } }).save();
+// Login form handling (on login page)
+const loginForm = document.getElementById('loginForm');
+if(loginForm){
+  loginForm.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const fullname = document.getElementById('fullname').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const service = document.getElementById('service').value;
+    if(!fullname || !email) return alert('Veuillez renseigner le nom et l\'email');
+    setSession({fullname,email,service});
+    window.location.href = '/web/plan.html';
   });
+}
 
-  loadReports();
-})();
+// Plan page rendering
+const userInfoEl = document.getElementById('userInfo');
+const plansContainer = document.getElementById('plansContainer');
+const filterService = document.getElementById('filterService');
+const exportPdfBtn = document.getElementById('exportPdf');
+
+function samplePlans(){
+  return [
+    {id:1, patient:'M. Kabila', risk:'Élevé', service:'medicine', plan:'Surveillance rapprochée, mobiliser 2x/j, surveiller glycémie.'},
+    {id:2, patient:'Mme. Mbala', risk:'Moyen', service:'surgery', plan:'Antalgiques, kiné, réévaluation J+1.'},
+    {id:3, patient:'Enf. K.', risk:'Faible', service:'pediatrics', plan:'Hydratation, surveillance respiratoire.'},
+  ];
+}
+
+function renderUser(){
+  const s = getSession();
+  if(!s){
+    userInfoEl.innerHTML = '<p><em>Utilisateur non connecté. Veuillez vous connecter via /web/login.html</em></p>';
+    return;
+  }
+  userInfoEl.innerHTML = `<p>Connecté : <strong>${s.fullname}</strong> — ${s.email} — Service : ${s.service}</p>`;
+}
+
+function renderPlans(){
+  const s = getSession();
+  const all = samplePlans();
+  const filter = filterService ? filterService.value : (s? s.service : 'all');
+  const list = (filter==='all') ? all : all.filter(p=>p.service===filter);
+  plansContainer.innerHTML = '';
+  list.forEach(p=>{
+    const card = document.createElement('article');
+    card.className = 'plan-card';
+    card.innerHTML = `\n      <h3>${p.patient} <small>(${p.risk})</small></h3>\n      <p>${p.plan}</p>\n      <div class=\"plan-actions\">\n        <button class=\"btn-delete\" data-id=\"${p.id}\">Supprimer</button>\n      </div>`;
+    plansContainer.appendChild(card);
+  });
+  attachDeleteHandlers();
+}
+
+function attachDeleteHandlers(){
+  document.querySelectorAll('.btn-delete').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const s = getSession();
+      if(!s) return alert('Action non autorisée — connectez-vous');
+      if(s.email !== ADMIN_EMAIL) return alert('Suppression réservée aux administrateurs.');
+      const id = btn.getAttribute('data-id');
+      // prototype: no backend mutation; show message
+      alert('Suppression simulée — plan id='+id);
+    });
+  });
+}
+
+if(filterService){
+  filterService.addEventListener('change', renderPlans);
+}
+
+if(exportPdfBtn){
+  exportPdfBtn.addEventListener('click', ()=>{
+    // Simple client-side PDF export using print (for prototype).
+    window.print();
+  });
+}
+
+renderUser();
+renderPlans();

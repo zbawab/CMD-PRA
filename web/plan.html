@@ -3,32 +3,34 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Carerisk - Plans de soins</title>
-  <link rel="stylesheet" href="/web/styles.css">
+  <title>Plan de soins — CARERISK</title>
+  <link rel="stylesheet" href="/web/styles.css" />
 </head>
 <body>
-  <header class="site-header small">
-    <img src="/web/assets/header.png" alt="CMD Header" class="header-image" />
+  <header class="site-header">
+    <img src="/web/assets/header.png" alt="CMD - CARERISK" />
+    <h1>Plans de soins — CARERISK (Prototype)</h1>
   </header>
 
   <main class="container">
-    <div class="topbar">
-      <div id="userInfo"></div>
-      <div>
-        <button id="logoutBtn">Se déconnecter</button>
-      </div>
-    </div>
+    <section class="user-info" id="userInfo"></section>
 
-    <h1>Plans de soins / Rapports</h1>
+    <section class="controls">
+      <label>Filtrer par service:
+        <select id="filterService">
+          <option value="all">Tous</option>
+          <option value="medicine">Médecine</option>
+          <option value="surgery">Chirurgie</option>
+          <option value="pediatrics">Pédiatrie</option>
+          <option value="icu">Réanimation</option>
+        </select>
+      </label>
+      <button id="exportPdf">Exporter PDF</button>
+    </section>
 
-    <div class="actions">
-      <button id="downloadAll">Télécharger le plan visible en PDF</button>
-    </div>
-
-    <section id="reportsList"></section>
+    <section id="plansContainer" class="plans"></section>
   </main>
 
   <script src="/web/plan.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 </body>
 </html>

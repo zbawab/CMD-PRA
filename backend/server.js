@@ -1,54 +1,40 @@
+/* Prototype in-memory backend for CARERISK evolutions
+   - Exposes endpoints to list reports by service
+   - Deletion endpoint checks admin email (prototype)
+   - NOT for production: integrate with real DB & auth before deploying
+*/
+
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
-// Serve static web files if placed under web/
-app.use('/web', express.static('web'));
-
-// Sample in-memory data store (replace with DB integrations)
-let reports = [
-  { id:'r1', patient:'Jean Dupont', category:'Prévention chutes', content:'Plan A', service:'Hospitalisation médecine' },
-  { id:'r2', patient:'Marie T', category:'Soins postopératoires', content:'Plan B', service:'Hospitalisation chirurgie' }
+let plans = [
+  {id:1, patient:'M. Kabila', risk:'Élevé', service:'medicine', plan:'Surveillance rapprochée'},
+  {id:2, patient:'Mme. Mbala', risk:'Moyen', service:'surgery', plan:'Antalgiques'},
+  {id:3, patient:'Enf. K.', risk:'Faible', service:'pediatrics', plan:'Hydratation'},
 ];
-let patients = [{ id:'p1', name:'Jean Dupont' }, { id:'p2', name:'Marie T' }];
 
-const SERVICES = ['Hospitalisation médecine','Hospitalisation chirurgie','Pédiatrie','Maternité','Soins intensifs'];
-
-function isAdminEmail(email){ return email === 'zbawab@cmd.cd'; }
-
-// Return services
-app.get('/api/services', (req,res)=> res.json(SERVICES));
-
-// Get reports (filtered by service). Admin can request all by omitting service or by admin email header
-app.get('/api/reports', (req,res)=>{
+// List plans, optional ?service=...
+app.get('/api/plans', (req,res)=>{
   const service = req.query.service;
-  const userEmail = req.header('x-user-email') || '';
-  if(isAdminEmail(userEmail)) return res.json(reports);
-  if(service){ return res.json(reports.filter(r => r.service === service)); }
-  return res.json([]);
+  if(service){
+    return res.json(plans.filter(p=>p.service===service));
+  }
+  res.json(plans);
 });
 
-// Delete patient (admin only)
-app.delete('/api/patients/:id', (req,res)=>{
-  const userEmail = req.header('x-user-email') || '';
-  if(!isAdminEmail(userEmail)) return res.status(403).json({ error:'Forbidden' });
-  const id = req.params.id;
-  patients = patients.filter(p => p.id !== id);
-  return res.json({ ok:true });
-});
-
-// Delete plan/report (admin only)
+// Simulated deletion: requires adminEmail in body to allow
 app.delete('/api/plans/:id', (req,res)=>{
-  const userEmail = req.header('x-user-email') || '';
-  if(!isAdminEmail(userEmail)) return res.status(403).json({ error:'Forbidden' });
-  const id = req.params.id;
-  const before = reports.length;
-  reports = reports.filter(r => r.id !== id);
-  return res.json({ ok: before !== reports.length });
+  const adminEmail = req.body.adminEmail;
+  if(adminEmail !== 'zbawab@cmd.cd'){
+    return res.status(403).json({error:'Suppression réservée aux administrateurs.'});
+  }
+  const id = Number(req.params.id);
+  plans = plans.filter(p=>p.id!==id);
+  res.json({ok:true});
 });
 
-const port = process.env.PORT || 4000;
-app.listen(port, ()=> console.log('Server listening on', port));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, ()=>console.log(`CARERISK prototype backend listening on ${PORT}`));
