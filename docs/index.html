@@ -803,11 +803,25 @@ function updatePlanDialog(planId) {
         document.getElementById('patient-select').value = cp.patient.id;
         updateEvalDevices();
         setTimeout(()=>{ calculateRisks(); },100);
+
         alert("Réalisez d'éventuelles modifications puis cliquez sur 'Générer plan de soins' pour enregistrer la mise à jour.");
-        document.querySelector("#evaluation-section button[onclick*='generateCarePlan']").onclick=function(){
-            generateCarePlan(true, planId);
-            showSection('care-plans');
-        };
+
+        // Remet d'abord le handler d'origine
+        const genBtn = document.querySelector("#evaluation-section button[onclick*='generateCarePlan']");
+        if(genBtn) {
+            genBtn.onclick = null;
+            genBtn.addEventListener('click', function handler() {
+                generateCarePlan(true, planId);
+                // Sauve immédiatement après modif/màj
+                saveAll();
+                alert("Plan de soins mis à jour !");
+                showSection('care-plans');
+                // Une seule exécution !
+                genBtn.removeEventListener('click', handler);
+                // Après mise à jour, remet le 'onclick' standard pour permettre la création d'un nouveau plan normal
+                genBtn.setAttribute('onclick', 'generateCarePlan()');
+            }, { once: true });
+        }
     }
 }
 function downloadCarePlan() {
