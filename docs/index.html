@@ -95,26 +95,16 @@
             align-items: center;
             margin-bottom: 12px;
         }
-        .alert-high, .critere-gravite.eleve {
-            background-color: #c0392b !important;
-            color: white !important;
-        }
-        .alert-moderate, .critere-gravite.modere {
-            background-color: #d35400 !important;
-            color: white !important;
-        }
-        .alert-low, .critere-gravite.faible {
-            background-color: #f1c40f !important;
-            color: #000 !important;
-        }
-        .critere-gravite {
+        .risk-label {
+            display:inline-block;
             font-weight: bold;
-            padding: 7px 16px;
-            margin-top: 4px;
-            margin-bottom: 14px;
-            display: inline-block;
-            border-radius: 2.5px;
+            margin-left:8px;
+            padding: 2px 9px 2px 9px;
+            border-radius: 4px;
         }
+        .risk-low { color: #20742b; background-color: #e6ffda;}
+        .risk-moderate { color: #d35400; background-color: #fff6e6;}
+        .risk-high { color: #c0392b; background-color: #ffeaea;}
         .device-critical {
             color: #c0392b;
             font-weight: bold;
@@ -236,7 +226,7 @@
         <section id="evaluation-section" class="hidden">
             <h2>Évaluation des risques</h2>
             <label class="eval-critere" for="patient-select">Sélectionnez un patient</label>
-            <select id="patient-select" onchange="updateEvalDevices()"></select>
+            <select id="patient-select" onchange="updateEvalDevices();calculateRisks()"></select>
             
             <!-- Risque d'escarres (Échelle de Braden) -->
             <div class="risk-section">
@@ -244,48 +234,50 @@
                     <h3 style="margin:0;">Risque d'escarres (Échelle de Braden)</h3>
                 </div>
                 <label class="eval-critere">Perception sensorielle</label>
-                <select id="braden-sensory">
+                <select id="braden-sensory" onchange="calculateRisks()">
                     <option value="1">Complètement limitée (1)</option>
                     <option value="2">Très limitée (2)</option>
                     <option value="3">Légèrement limitée (3)</option>
                     <option value="4">Aucune limitation (4)</option>
                 </select>
                 <label class="eval-critere">Humidité</label>
-                <select id="braden-humidity">
+                <select id="braden-humidity" onchange="calculateRisks()">
                     <option value="1">Constamment humide (1)</option>
                     <option value="2">Très humide (2)</option>
                     <option value="3">Occasionnellement humide (3)</option>
                     <option value="4">Rarement humide (4)</option>
                 </select>
                 <label class="eval-critere">Activité</label>
-                <select id="braden-activity">
+                <select id="braden-activity" onchange="calculateRisks()">
                     <option value="1">Alité (1)</option>
                     <option value="2">En fauteuil (2)</option>
                     <option value="3">Marche occasionnellement (3)</option>
                     <option value="4">Marche fréquemment (4)</option>
                 </select>
                 <label class="eval-critere">Mobilité</label>
-                <select id="braden-mobility">
+                <select id="braden-mobility" onchange="calculateRisks()">
                     <option value="1">Complètement immobile (1)</option>
                     <option value="2">Très limitée (2)</option>
                     <option value="3">Légèrement limitée (3)</option>
                     <option value="4">Aucune limitation (4)</option>
                 </select>
                 <label class="eval-critere">Nutrition</label>
-                <select id="braden-nutrition">
+                <select id="braden-nutrition" onchange="calculateRisks()">
                     <option value="1">Très pauvre (1)</option>
                     <option value="2">Probablement inadéquate (2)</option>
                     <option value="3">Adéquate (3)</option>
                     <option value="4">Excellente (4)</option>
                 </select>
                 <label class="eval-critere">Friction et cisaillement</label>
-                <select id="braden-friction">
+                <select id="braden-friction" onchange="calculateRisks()">
                     <option value="1">Problème (1)</option>
                     <option value="2">Problème potentiel (2)</option>
                     <option value="3">Aucun problème apparent (3)</option>
                 </select>
-                <p style="margin-bottom:0;">Score Braden: <span id="braden-score">0</span>/23</p>
-                <span id="braden-gravite" class="critere-gravite"></span>
+                <p style="margin-bottom:0;">
+                    Score Braden: <span id="braden-score">0</span>/23
+                    <span id="braden-risque" class="risk-label"></span>
+                </p>
             </div>
 
             <!-- Risque de chutes (Échelle de Morse) -->
@@ -294,39 +286,41 @@
                     <h3 style="margin:0;">Risque de chutes (Échelle de Morse)</h3>
                 </div>
                 <label class="eval-critere">Historique de chutes</label>
-                <select id="morse-history">
+                <select id="morse-history" onchange="calculateRisks()">
                     <option value="0">Non (0)</option>
                     <option value="25">Oui (25)</option>
                 </select>
                 <label class="eval-critere">Diagnostic secondaire</label>
-                <select id="morse-secondary">
+                <select id="morse-secondary" onchange="calculateRisks()">
                     <option value="0">Non (0)</option>
                     <option value="15">Oui (15)</option>
                 </select>
                 <label class="eval-critere">Aide à la marche</label>
-                <select id="morse-aid">
+                <select id="morse-aid" onchange="calculateRisks()">
                     <option value="0">Aucune/lit/aide soignant (0)</option>
                     <option value="15">Béquilles/canne/déambulateur (15)</option>
                     <option value="30">Mobilier (30)</option>
                 </select>
                 <label class="eval-critere">Thérapie IV/accès veineux</label>
-                <select id="morse-iv">
+                <select id="morse-iv" onchange="calculateRisks()">
                     <option value="0">Non (0)</option>
                     <option value="20">Oui (20)</option>
                 </select>
                 <label class="eval-critere">Démarche</label>
-                <select id="morse-gait">
+                <select id="morse-gait" onchange="calculateRisks()">
                     <option value="0">Normale/lit/fauteuil roulant (0)</option>
                     <option value="10">Faible (10)</option>
                     <option value="20">Démarche altérée (20)</option>
                 </select>
                 <label class="eval-critere">État mental</label>
-                <select id="morse-mental">
+                <select id="morse-mental" onchange="calculateRisks()">
                     <option value="0">Orienté vers ses capacités (0)</option>
                     <option value="15">Surévalue ses capacités (15)</option>
                 </select>
-                <p style="margin-bottom:0;">Score Morse: <span id="morse-score">0</span>/125</p>
-                <span id="morse-gravite" class="critere-gravite"></span>
+                <p style="margin-bottom:0;">
+                    Score Morse: <span id="morse-score">0</span>/125
+                    <span id="morse-risque" class="risk-label"></span>
+                </p>
             </div>
 
             <!-- Risque d'infection avec ajout dispositif -->
@@ -336,28 +330,28 @@
                     <button type="button" onclick="addDeviceFromEval()">Ajouter un dispositif</button>
                 </div>
                 <label class="eval-critere">Âge</label>
-                <select id="infection-age">
+                <select id="infection-age" onchange="calculateRisks()">
                     <option value="0">&lt; 65 ans (0)</option>
                     <option value="1">65-80 ans (1)</option>
                     <option value="2">&gt; 80 ans (2)</option>
                 </select>
                 <label class="eval-critere">Immunosuppression</label>
-                <select id="infection-immuno">
+                <select id="infection-immuno" onchange="calculateRisks()">
                     <option value="0">Non (0)</option>
                     <option value="2">Oui (2)</option>
                 </select>
                 <label class="eval-critere">Antibiotiques récents</label>
-                <select id="infection-antibiotics">
+                <select id="infection-antibiotics" onchange="calculateRisks()">
                     <option value="0">Non (0)</option>
                     <option value="1">Oui (1)</option>
                 </select>
                 <label class="eval-critere">Chirurgie récente</label>
-                <select id="infection-surgery">
+                <select id="infection-surgery" onchange="calculateRisks()">
                     <option value="0">Non (0)</option>
                     <option value="1">Oui (1)</option>
                 </select>
                 <label class="eval-critere">Comorbidités</label>
-                <select id="infection-comorbidities">
+                <select id="infection-comorbidities" onchange="calculateRisks()">
                     <option value="0">Aucune (0)</option>
                     <option value="1">1-2 comorbidités (1)</option>
                     <option value="2">3+ comorbidités (2)</option>
@@ -368,9 +362,13 @@
                     </label>
                     <ul id="devices-list"></ul>
                 </div>
-                <p style="margin-bottom:0;">Score dispositifs: <span id="devices-score">0</span></p>
-                <p style="margin-bottom:0;">Score infection: <span id="infection-score">0</span>/10</p>
-                <span id="infection-gravite" class="critere-gravite"></span>
+                <p style="margin-bottom:0;">
+                    Score dispositifs: <span id="devices-score">0</span>
+                </p>
+                <p style="margin-bottom:0;">
+                    Score Infection: <span id="infection-score">0</span>/10
+                    <span id="infection-risque" class="risk-label"></span>
+                </p>
             </div>
             <button onclick="calculateRisks()">Calculer les risques</button>
             <button onclick="generateCarePlan()">Générer plan de soins</button>
@@ -475,7 +473,6 @@
         }
 
         function loadData() {
-            // Données initiales
             patients = [
                 { id: 0, name: 'Doe', firstname: 'John', age: 50, room: '101', diagnosis: 'Exemple',
                   createdAt: (new Date()).toLocaleString(), createdBy: 'Systeme'}
@@ -543,7 +540,24 @@
             });
         }
 
-        // EVALUATION
+        // EVALUATION & RISQUES COULEUR LIBELLE
+        function getRiskLabel(score, cat) {
+            if(cat=="braden"){
+                if(score<=12)   return {text:'Risque élevé', class:'risk-high'};
+                if(score<=16)   return {text:'Risque modéré', class:'risk-moderate'};
+                return {text:'Risque faible', class:'risk-low'};
+            } else if(cat=="morse"){
+                if(score>=51)   return {text:'Risque élevé', class:'risk-high'};
+                if(score>=25)   return {text:'Risque modéré', class:'risk-moderate'};
+                return {text:'Risque faible', class:'risk-low'};
+            } else if(cat=="infection"){
+                if(score>=7)    return {text:'Risque élevé', class:'risk-high'};
+                if(score>=4)    return {text:'Risque modéré', class:'risk-moderate'};
+                return {text:'Risque faible', class:'risk-low'};
+            }
+            return {text:'',class:''};
+        }
+
         function calculateRisks() {
             // BRADEN
             const braden = 
@@ -554,34 +568,25 @@
                 + parseInt(document.getElementById('braden-nutrition').value)
                 + parseInt(document.getElementById('braden-friction').value);
             document.getElementById('braden-score').textContent = braden;
-            // Braden gravité
-            let bradenRisq = '';
-            let bradenC = '';
-            if (braden <= 12) { bradenRisq = "Risque élevé"; bradenC="eleve"; }
-            else if (braden <= 16) { bradenRisq = "Risque modéré"; bradenC="modere";}
-            else { bradenRisq = "Risque faible"; bradenC="faible";}
-            document.getElementById('braden-gravite').textContent = bradenRisq;
-            document.getElementById('braden-gravite').className = 'critere-gravite ' + bradenC;
+            let bradenLab = getRiskLabel(braden,"braden");
+            let bradenSpan = document.getElementById('braden-risque');
+            bradenSpan.textContent = bradenLab.text;
+            bradenSpan.className = "risk-label "+bradenLab.class;
 
             // MORSE
-            const morse = 
-                parseInt(document.getElementById('morse-history').value)
+            const morse = parseInt(document.getElementById('morse-history').value)
                 + parseInt(document.getElementById('morse-secondary').value)
                 + parseInt(document.getElementById('morse-aid').value)
                 + parseInt(document.getElementById('morse-iv').value)
                 + parseInt(document.getElementById('morse-gait').value)
                 + parseInt(document.getElementById('morse-mental').value);
             document.getElementById('morse-score').textContent = morse;
-            // Morse gravité
-            let morseRisq = '';
-            let morseC = '';
-            if(morse >= 51) { morseRisq="Risque élevé"; morseC="eleve";}
-            else if(morse >= 25) { morseRisq="Risque modéré"; morseC="modere";}
-            else { morseRisq="Risque faible"; morseC="faible";}
-            document.getElementById('morse-gravite').textContent = morseRisq;
-            document.getElementById('morse-gravite').className = 'critere-gravite '+ morseC;
+            let morseLab = getRiskLabel(morse,"morse");
+            let morseSpan = document.getElementById('morse-risque');
+            morseSpan.textContent = morseLab.text;
+            morseSpan.className = "risk-label "+morseLab.class;
 
-            // INFECTION (uniquement dispositifs du patient sélectionné)
+            // INFECTION (dispositifs du patient)
             const pid = document.getElementById('patient-select').value;
             const patientDevices = devices.filter(d => d.patientId == pid);
             const devicesScore = patientDevices.reduce((sum, d) => sum + (d.criticality === 'critical' ? 2 : 1), 0);
@@ -594,16 +599,12 @@
                 + parseInt(document.getElementById('infection-surgery').value)
                 + parseInt(document.getElementById('infection-comorbidities').value)
                 + devicesScore;
-            document.getElementById('infection-score').textContent = Math.min(infection, 10);
-
-            // Infection gravité
-            let infRisq = '';
-            let infC = '';
-            if(infection >= 7) { infRisq="Risque élevé"; infC="eleve";}
-            else if(infection >= 4) { infRisq="Risque modéré"; infC="modere";}
-            else {infRisq="Risque faible"; infC="faible";}
-            document.getElementById('infection-gravite').textContent = infRisq;
-            document.getElementById('infection-gravite').className = 'critere-gravite '+infC;
+            const infScore = Math.min(infection, 10);
+            document.getElementById('infection-score').textContent = infScore;
+            let infLab = getRiskLabel(infScore,"infection");
+            let infSpan = document.getElementById('infection-risque');
+            infSpan.textContent = infLab.text;
+            infSpan.className = "risk-label "+infLab.class;
         }
 
         function generateCarePlan(isUpdate = false, updatePlanId=null) {
@@ -654,19 +655,15 @@
             const output = document.getElementById('care-plan-output');
             output.innerHTML = '';
             carePlans.forEach(cp => {
-                let bradenLevel = cp.risks.braden <= 12 ? 'high' : (cp.risks.braden <= 16 ? 'moderate' : 'low');
-                let morseLevel = cp.risks.morse >= 51 ? 'high' : (cp.risks.morse >= 25 ? 'moderate' : 'low');
-                let infectionLevel = cp.risks.infection >= 7 ? 'high' : (cp.risks.infection >= 4 ? 'moderate' : 'low');
-                // Libellés
-                let bradenLbl = (bradenLevel=="high"? "Risque élevé": bradenLevel=="moderate"? "Risque modéré":"Risque faible");
-                let morseLbl = (morseLevel=="high"? "Risque élevé": morseLevel=="moderate"? "Risque modéré":"Risque faible");
-                let infLbl = (infectionLevel=="high"? "Risque élevé": infectionLevel=="moderate"? "Risque modéré":"Risque faible");
+                let bradenLab = getRiskLabel(cp.risks.braden,"braden");
+                let morseLab  = getRiskLabel(cp.risks.morse,"morse");
+                let infLab    = getRiskLabel(cp.risks.infection,"infection");
                 const div = document.createElement('div');
                 div.innerHTML = `
                     <p><b>Plan pour ${cp.patient.name} ${cp.patient.firstname}:</b> <span style="font-size:0.97em; color:#888;">(créé le ${cp.createdAt} par ${cp.createdBy})</span></p>
-                    <p class="alert-${bradenLevel}">Risque escarres: ${bradenLbl} (Score: ${cp.risks.braden})</p>
-                    <p class="alert-${morseLevel}">Risque chutes: ${morseLbl} (Score: ${cp.risks.morse})</p>
-                    <p class="alert-${infectionLevel}">Risque infection: ${infLbl} (Score: ${cp.risks.infection})</p>
+                    <p>Escarres: <span class="risk-label ${bradenLab.class}">${bradenLab.text}</span> (Score ${cp.risks.braden})</p>
+                    <p>Chutes: <span class="risk-label ${morseLab.class}">${morseLab.text}</span> (Score ${cp.risks.morse})</p>
+                    <p>Infection: <span class="risk-label ${infLab.class}">${infLab.text}</span> (Score ${cp.risks.infection})</p>
                     <button class="plan-update-btn" onclick="updatePlanDialog(${cp.id})">Mettre à jour ce plan</button>
                     <div class="plan-historique">
                         <b>Historique de mises à jour :</b>
@@ -704,23 +701,17 @@
             URL.revokeObjectURL(url);
         }
 
-        // FONCTION update plan : re-remplit les critères puis regénère le plan
+        // update plan
         function updatePlanDialog(planId){
             const cp = carePlans.find(p => p.id==planId);
             if(cp){
                 showSection('evaluation');
                 document.getElementById('patient-select').value = cp.patient.id;
-                // Repeupler l'UI des scores
                 updateEvalDevices();
-                // Attributs : aucun stockage des critères séparés, donc réutilise les scores pour guider
-                // (Ici, les champs sont laissés aux valeurs courantes, ou on pourrait stocker tout le détail pour chaque plan dans l'objet "plan" si besoin plus tard !)
                 setTimeout(()=>{
                     calculateRisks();
-                    // Suggérer visuel pour l'utilisateur de cliquer sur Générer plan de soins pour valider la mise à jour.
-                },90);
-                // Ajoute l'instruction
+                },100);
                 alert("Réalisez d'éventuelles modifications puis cliquez de nouveau sur 'Générer plan de soins' pour enregistrer la mise à jour.");
-                // Sauvegarde la mise à jour au clic du bouton
                 document.querySelector("#evaluation-section button[onclick*='generateCarePlan']").onclick=function(){
                     generateCarePlan(true, planId);
                     showSection('care-plans');
@@ -761,7 +752,6 @@
                 if(fullList) fullList.appendChild(li.cloneNode(true));
             });
         }
-        // Dispositifs du patient dans page évaluation
         function updateEvalDevices() {
             const evalList = document.getElementById('devices-list');
             if(!evalList) return;
@@ -776,10 +766,9 @@
                 li.innerHTML = `${d.type} (${d.criticality==='critical' ? 'À retirer' : 'Bon'}) <span class="${className}">(${d.location || 'non précisée'})</span> `;
                 evalList.appendChild(li);
             })
-            // Score update :
+            // Mise à jour score infection
             calculateRisks();
         }
-        // Bouton ajout dispositif dans évaluation
         function addDeviceFromEval() {
             const pid = document.getElementById('patient-select').value;
             if (pid !== "") {
