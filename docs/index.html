@@ -44,6 +44,30 @@ button:hover { background-color:#218838;}
 .patient-meta { font-size:0.89em; color:#888; margin-top:2px; line-height:1.3;}
 @media (max-width:690px) { h1 { font-size:1.3em;} .container, .container.home { max-width:99vw; padding:9px 1vw;} #cmd-logo { width:60px; } }
 </style>
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDYO8pMl2nlBtoDnmD4qnwbJlnkvSNgc3U",
+    authDomain: "carerisk-d9fe7.firebaseapp.com",
+    databaseURL: "https://carerisk-d9fe7-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "carerisk-d9fe7",
+    storageBucket: "carerisk-d9fe7.firebasestorage.app",
+    messagingSenderId: "1084442471300",
+    appId: "1:1084442471300:web:637fa30906355a6c094bd1",
+    measurementId: "G-E9VQ19FRJC"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 </head>
 <body>
 <header onclick="goHome()" title="Retour à l'accueil">
