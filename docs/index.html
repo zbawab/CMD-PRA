@@ -259,7 +259,7 @@ button:hover { background-color:#218838;}
 <section id="care-plans-section" class="hidden">
     <h2>Plans de soins générés</h2>
     <div id="care-plan-output"></div>
-    <button id="download-plan" onclick="downloadCarePlan()">Télécharger tous les plans de soins</button>
+   <!-- plus de bouton ici : tout est par patient ! -->
 </section>
 <section id="devices-section" class="hidden">
     <h2>Gestion des Dispositifs Invasifs</h2>
@@ -822,7 +822,40 @@ function downloadCarePlan() {
     a.click();
     URL.revokeObjectURL(url);
 }
+function downloadCarePlanSingle(planId) {
+    const cp = carePlans.find(p => p.id == planId);
+    if(!cp) return alert("Plan non trouvé !");
+    // Format texte lisible :
+    let txt = 
+`Plan de soins pour : ${cp.patient.name} ${cp.patient.firstname}
+Âge : ${cp.patient.age}   Chambre : ${cp.patient.room}
+Généré le ${cp.createdAt} par ${cp.createdBy}
+Mise à jour le : ${cp.lastUpdate||cp.createdAt}
 
+--- Risques évalués ---
+- Escarres (Braden) : ${cp.risques.braden} - ${getRiskLabel(cp.risques.braden,"braden").text}
+- Chutes (Morse) : ${cp.risques.morse} - ${getRiskLabel(cp.risques.morse,"morse").text}
+- Infection : ${cp.risques.infection} - ${getRiskLabel(cp.risques.infection,"infection").text}
+
+--- Actions de soins recommandées ---
+${(cp.actions||[]).map((a,i)=>`${i+1}. ${a}`).join('\n')}
+
+${(cp.history && cp.history.length>0)? 
+`--- Historique modifications ---\n${
+    cp.history.map(h=>`MAJ du ${h.date} par ${h.by}\n${(h.actions||[]).map((a,i)=>`- ${a}`).join('\n')}\n`).join('')}`
+    :""
+}
+`;
+
+    // Génère et télécharge le fichier texte
+    const blob = new Blob([txt], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `plan_soins_${cp.patient.name}_${cp.patient.firstname}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
 // ---------- ADMIN -----------------
 function updateAdminSelects() { updatePatientSelects(); updateCarePlans(); }
 function deletePatient() {
