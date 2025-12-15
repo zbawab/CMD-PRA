@@ -738,39 +738,67 @@ function generateCarePlan(isUpdate = false, updatePlanId=null) {
     setTimeout(()=>{ alert("Plan de soins généré ! Veuillez vérifier dans le volet 'Plans de soins'."); },200);
 }
 function updateCarePlans() {
-    const output = document.getElementById('care-plan-output'); output.innerHTML = '';
-    const sorted = carePlans.slice().sort((a,b) => {
-        let da = new Date(a.lastUpdate), db = new Date(b.lastUpdate);
-        return db - da;
+    const output = document.getElementById('care-plan-output');
+    output.innerHTML = '';
+    // Groupe par patient
+    const patientsWithPlans = {};
+    carePlans.forEach(cp => {
+        if(!patientsWithPlans[cp.patient.id]) patientsWithPlans[cp.patient.id] = [];
+        patientsWithPlans[cp.patient.id].push(cp);
     });
-    sorted.forEach(cp => {
-        let bradenLab = getRiskLabel(cp.risques.braden,"braden");
-        let morseLab  = getRiskLabel(cp.risques.morse,"morse");
-        let infLab    = getRiskLabel(cp.risques.infection,"infection");
-        const div = document.createElement('div');
-        div.innerHTML = `
-            <p><b>Plan pour ${cp.patient.name} ${cp.patient.firstname}:</b> 
-            <span style="font-size:0.97em; color:#888;">
-                (créé le ${cp.createdAt} par ${cp.createdBy})
-            </span>
-            <span style="float:right;font-size:0.95em;color:#444">Dernière maj. ${cp.lastUpdate||cp.createdAt}</span></p>
-            <p>Escarres: <span class="risk-label ${bradenLab.class}">${bradenLab.text}</span> (Score ${cp.risques.braden})</p>
-            <p>Chutes: <span class="risk-label ${morseLab.class}">${morseLab.text}</span> (Score ${cp.risques.morse})</p>
-            <p>Infection: <span class="risk-label ${infLab.class}">${infLab.text}</span> (Score ${cp.risques.infection})</p>
-            <div class="plan-actions">
-                <div class="plan-actions-title">Actions infirmières recommandées :</div>
-                <ul class="plan-actions-list">
-                    ${(cp.actions||[]).map(act=>`<li>${act}</li>`).join('')}
-                </ul>
-            </div>
-            <button class="plan-update-btn" onclick="updatePlanDialog(${cp.id})">Mettre à jour ce plan</button>
-            <div class="plan-historique">
-                <b>Historique de mises à jour :</b>
-                ${(cp.history && cp.history.length>0) ? cp.history.map(h => 
-                    `<div class="plan-historique-entry">Modifié le <b>${h.date}</b> par <i>${h.by}</i></div>
-                    <ul>${(h.actions || []).map(a=>`<li>${a}</li>`).join('')}</ul>`).join('') : '<div>Aucune mise à jour.</div>'}
-            </div>`;
-        output.appendChild(div);
+    // On parcourt chaque patient ayant au moins un plan
+    Object.keys(patientsWithPlans).forEach(pid=>{
+        const plans = patientsWithPlans[pid];
+        const pat = plans[0].patient;
+        const patientDiv = document.createElement('div');
+        patientDiv.style.border = "1px solid #cdf";
+        patientDiv.style.margin = "18px 0";
+        patientDiv.style.borderRadius="12px";
+        patientDiv.style.background="#f4faff";
+        patientDiv.style.boxShadow="0 2px 8px #cbeafc40";
+        patientDiv.innerHTML = `<h3 style="color:#005e87;padding:.3em 0 .3em 1em">🧑‍⚕️ ${pat.name} ${pat.firstname}</h3>`;
+        plans.forEach(cp => {
+            let bradenLab = getRiskLabel(cp.risques.braden,"braden");
+            let morseLab  = getRiskLabel(cp.risques.morse,"morse");
+            let infLab    = getRiskLabel(cp.risques.infection,"infection");
+            const div = document.createElement('div');
+            div.style.marginLeft = "18px";
+            div.style.marginRight="8px";
+            div.style.marginBottom="1.5em";
+            div.innerHTML = `
+                <p><b>Plan généré le ${cp.createdAt} par ${cp.createdBy}</b> <span style="float:right;font-size:0.95em;color:#444">Dernière maj. ${cp.lastUpdate||cp.createdAt}</span></p>
+                <p>Escarres: <span class="risk-label ${bradenLab.class}">${bradenLab.text}</span> (Score ${cp.risques.braden})</p>
+                <p>Chutes: <span class="risk-label ${morseLab.class}">${morseLab.text}</span> (Score ${cp.risques.morse})</p>
+                <p>Infection: <span class="risk-label ${infLab.class}">${infLab.text}</span> (Score ${cp.risques.infection})</p>
+                <div class="plan-actions">
+                    <div class="plan-actions-title">Actions infirmières recommandées :</div>
+                    <ul class="plan-actions-list">
+                        ${(cp.actions||[]).map(act=>`<li>${act}</li>`).join('')}
+                    </ul>
+                </div>
+                <button class="plan-update-btn" onclick="updatePlanDialog(${cp.id})">Mettre à jour ce plan</button>
+                <div class="plan-historique">
+                    <b>Historique de mises à jour :</b>
+                    ${(cp.history && cp.history.length>0) ? cp.history.map(h => 
+                        `<div class="plan-historique-entry">Modifié le <b>${h.date}</b> par <i>${h.by}</i></div>
+                        <ul>${(h.actions || []).map(a=>`<li>${a}</li>`).join('')}</ul>`).join('') : '<div>Aucune mise à jour.</div>'}
+                </div>`;
+            patientDiv.appendChild(div);
+        });
+        output.appendChild(patientDiv);
+    });
+    // Mise à jour du select plan admin
+    const planSelect = document.getElementById('admin-plan-select');
+    if(planSelect){
+        planSelect.innerHTML = '<option value="">Sélectionner un plan...</option>';
+        carePlans.forEach(cp => {
+            const option = document.createElement('option');
+            option.value = cp.id;
+            option.textContent = `Plan pour ${cp.patient.name} ${cp.patient.firstname}`;
+            planSelect.appendChild(option);
+        });
+    }
+}
     });
     const planSelect = document.getElementById('admin-plan-select');
     if(planSelect){
