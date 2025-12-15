@@ -799,17 +799,6 @@ function updateCarePlans() {
         });
     }
   }
-    const planSelect = document.getElementById('admin-plan-select');
-    if(planSelect){
-        planSelect.innerHTML = '<option value="">Sélectionner un plan...</option>';
-        sorted.forEach(cp => {
-            const option = document.createElement('option');
-            option.value = cp.id;
-            option.textContent = `Plan pour ${cp.patient.name} ${cp.patient.firstname}`;
-            planSelect.appendChild(option);
-        });
-    }
-}
 function updatePlanDialog(planId) {
     const cp = carePlans.find(p => p.id==planId);
     if(cp){
