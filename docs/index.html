@@ -305,13 +305,13 @@ button:hover { background-color:#218838;}
     <button onclick="deleteCarePlan()">Supprimer plan de soins</button>
 </section>
 <script>
-// ------------ LOGIQUE & DONNÉES ------------------
+<script>
 const dispositifsRegles = {
   "Cathéter Central":      {maxH: 168},
   "Cathéter Périphérique": {maxH: 96},
-  "Sonde Urinaire":        {maxH: 360}, // 15 jours
+  "Sonde Urinaire":        {maxH: 360},
   "Cathéter ombilical":    {maxH: 144},
-  "Intubation Endotrachéale": {maxH: 168}, // 7 jours
+  "Intubation Endotrachéale": {maxH: 168},
   "Ventilation non-invasive": {maxH: 120},
   "Drain Thoracique":      {maxH: 120},
   "Sonde Nasogastrique":   {maxH: 168},
@@ -348,6 +348,20 @@ function deviceDureeText(type, dt) {
     return `Durée : ${h}h / ${maxH}h max`;
 }
 
+// ----------- Sauvegarde et Chargement Persistance -------------
+function saveAll() {
+    localStorage.setItem('carePatients', JSON.stringify(patients));
+    localStorage.setItem('careDevices', JSON.stringify(devices));
+    localStorage.setItem('carePlans', JSON.stringify(carePlans));
+}
+function loadAll() {
+    let p=localStorage.getItem('carePatients'), d=localStorage.getItem('careDevices'), c=localStorage.getItem('carePlans');
+    patients = p ? JSON.parse(p) : [];
+    devices = d ? JSON.parse(d) : [];
+    carePlans = c ? JSON.parse(c) : [];
+}
+
+// ------------ LOGIQUE APPLI -------------
 let patients = [];
 let devices = [];
 let carePlans = [];
@@ -395,13 +409,14 @@ function showSection(section) {
     if(section=="evaluation") updateEvalDevices();
 }
 
-// ------------ DONNÉES PATIENTS, DEVICES, ETC. ------------
+// ------------ DONNÉES PATIENTS & CO -------------
 function loadData() {
-    patients = [
-        { id: 0, name: 'Doe', firstname: 'John', age: 50, room: '101', diagnosis: 'Exemple', createdAt: formatDate(new Date()), createdBy: 'Systeme'}
-    ];
-    devices = [];
-    carePlans = [];
+    loadAll();
+    if (patients.length === 0) {
+        patients = [
+          { id: 0, name: 'Doe', firstname: 'John', age: 50, room: '101', diagnosis: 'Exemple', createdAt: formatDate(new Date()), createdBy: 'Systeme'}
+        ];
+    }
     updatePatientList();
     updatePatientSelects();
     updateDevicesList();
@@ -423,6 +438,7 @@ function addPatient() {
     updatePatientList();
     updatePatientSelects();
     hideNewPatientForm();
+    saveAll();
 }
 function updatePatientList() {
     const list = document.getElementById('patient-list'); list.innerHTML = '';
@@ -453,7 +469,6 @@ function updatePatientSelects() {
     });
 }
 
-// ------------ RISQUES, SCORES, PLANS D'ACTION --------------
 function getRiskLabel(score, cat) {
     if(cat=="braden") {
         if(score<=12)   return {text:'Risque élevé', class:'risk-high'};
@@ -568,7 +583,9 @@ function calculateRisks() {
         + parseInt(document.getElementById('braden-friction').value);
     document.getElementById('braden-score').textContent = braden;
     let bradenLab = getRiskLabel(braden,"braden");
-    let bradenSpan = document.getElementById('braden-risque'); bradenSpan.textContent = bradenLab.text; bradenSpan.className = "risk-label "+bradenLab.class;
+    let bradenSpan = document.getElementById('braden-risque');
+    bradenSpan.textContent = bradenLab.text;
+    bradenSpan.className = "risk-label "+bradenLab.class;
     const morse = parseInt(document.getElementById('morse-history').value)
         + parseInt(document.getElementById('morse-secondary').value)
         + parseInt(document.getElementById('morse-aid').value)
@@ -577,7 +594,9 @@ function calculateRisks() {
         + parseInt(document.getElementById('morse-mental').value);
     document.getElementById('morse-score').textContent = morse;
     let morseLab = getRiskLabel(morse,"morse");
-    let morseSpan = document.getElementById('morse-risque'); morseSpan.textContent = morseLab.text; morseSpan.className = "risk-label "+morseLab.class;
+    let morseSpan = document.getElementById('morse-risque');
+    morseSpan.textContent = morseLab.text;
+    morseSpan.className = "risk-label "+morseLab.class;
     const pid = document.getElementById('patient-select').value;
     const patientDevices = devices.filter(d => d.patientId == pid);
     const devicesScore = patientDevices.reduce((sum, d) => sum + ((d.criticite||"ok") === 'critical' ? 2 : 1), 0);
@@ -591,7 +610,9 @@ function calculateRisks() {
     const infScore = Math.min(infection, 10);
     document.getElementById('infection-score').textContent = infScore;
     let infLab = getRiskLabel(infScore,"infection");
-    let infSpan = document.getElementById('infection-risque'); infSpan.textContent = infLab.text; infSpan.className = "risk-label "+infLab.class;
+    let infSpan = document.getElementById('infection-risque');
+    infSpan.textContent = infLab.text;
+    infSpan.className = "risk-label "+infLab.class;
 }
 
 // ------------ DEVICES
@@ -615,6 +636,7 @@ function addDevice() {
     });
     updateDevicesList();
     hideNewDeviceForm();
+    saveAll();
     if(currentSection==="devices") {
         showSection('evaluation');
         document.getElementById('patient-select').value = deviceInputPatientId;
@@ -713,6 +735,7 @@ function generateCarePlan(isUpdate = false, updatePlanId=null) {
     }
     updateCarePlans();
     document.getElementById('download-plan').classList.remove('hidden');
+    saveAll();
     setTimeout(()=>{ alert("Plan de soins généré ! Veuillez vérifier dans le volet 'Plans de soins'."); },200);
 }
 function updateCarePlans() {
@@ -777,7 +800,7 @@ function updatePlanDialog(planId) {
 }
 function downloadCarePlan() {
     const content = carePlans.map(cp => 
-        `Plan pour ${cp.patient.name}: Scores - Braden: ${cp.risks.braden}, Morse: ${cp.risks.morse}, Infection: ${cp.risks.infection}; Actions: ${cp.actions.join('; ')}`
+        `Plan pour ${cp.patient.name}: Scores - Braden: ${cp.risques.braden}, Morse: ${cp.risques.morse}, Infection: ${cp.risques.infection}; Actions: ${cp.actions.join('; ')}`
         ).join('\n');
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -798,6 +821,7 @@ function deletePatient() {
     devices = devices.filter(d => d.patientId != selectedId);
     carePlans = carePlans.filter(cp => cp.patient.id != selectedId);
     updatePatientList(); updatePatientSelects(); updateDevicesList(); updateCarePlans();
+    saveAll();
     alert('Patient supprimé');
 }
 function deleteCarePlan() {
@@ -805,9 +829,10 @@ function deleteCarePlan() {
     const selectedId = document.getElementById('admin-plan-select').value;
     if (selectedId === '' || !confirm("Confirmer la suppression du plan ?")) return;
     carePlans = carePlans.filter(cp => cp.id != selectedId);
-    updateCarePlans(); alert('Plan de soins supprimé');
+    updateCarePlans(); saveAll(); alert('Plan de soins supprimé');
 }
 </script>
+
 </div>
 </body>
 </html>
