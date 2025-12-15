@@ -125,13 +125,153 @@ button:hover { background-color:#218838;}
         <button type="submit">Ajouter</button>
         <button type="button" class="annuler-btn" onclick="hideNewPatientForm()">Annuler</button>
     </form>
-</section>
 <section id="evaluation-section" class="hidden">
     <h2>Évaluation des risques</h2>
     <label class="eval-critere" for="patient-select">Sélectionnez un patient</label>
     <select id="patient-select" onchange="updateEvalDevices();calculateRisks()"></select>
-    <!-- ... Les blocs HTML pour échelle Braden, Morse, Infection restent inchangés ... -->
-    <!-- ... Boutons pour calculer/générer le plan ... -->
+
+    <!-- Braden -->
+    <div class="risk-section">
+        <div class="risk-header">
+            <h3 style="margin:0;">Risque d'escarres (Échelle de Braden)</h3>
+        </div>
+        <label class="eval-critere">Perception sensorielle</label>
+        <select id="braden-sensory" onchange="calculateRisks()">
+            <option value="1">Complètement limitée (1)</option>
+            <option value="2">Très limitée (2)</option>
+            <option value="3">Légèrement limitée (3)</option>
+            <option value="4">Aucune limitation (4)</option>
+        </select>
+        <label class="eval-critere">Humidité</label>
+        <select id="braden-humidity" onchange="calculateRisks()">
+            <option value="1">Constamment humide (1)</option>
+            <option value="2">Très humide (2)</option>
+            <option value="3">Occasionnellement humide (3)</option>
+            <option value="4">Rarement humide (4)</option>
+        </select>
+        <label class="eval-critere">Activité</label>
+        <select id="braden-activity" onchange="calculateRisks()">
+            <option value="1">Alité (1)</option>
+            <option value="2">En fauteuil (2)</option>
+            <option value="3">Marche occasionnellement (3)</option>
+            <option value="4">Marche fréquemment (4)</option>
+        </select>
+        <label class="eval-critere">Mobilité</label>
+        <select id="braden-mobility" onchange="calculateRisks()">
+            <option value="1">Complètement immobile (1)</option>
+            <option value="2">Très limitée (2)</option>
+            <option value="3">Légèrement limitée (3)</option>
+            <option value="4">Aucune limitation (4)</option>
+        </select>
+        <label class="eval-critere">Nutrition</label>
+        <select id="braden-nutrition" onchange="calculateRisks()">
+            <option value="1">Très pauvre (1)</option>
+            <option value="2">Probablement inadéquate (2)</option>
+            <option value="3">Adéquate (3)</option>
+            <option value="4">Excellente (4)</option>
+        </select>
+        <label class="eval-critere">Friction et cisaillement</label>
+        <select id="braden-friction" onchange="calculateRisks()">
+            <option value="1">Problème (1)</option>
+            <option value="2">Problème potentiel (2)</option>
+            <option value="3">Aucun problème apparent (3)</option>
+        </select>
+        <p style="margin-bottom:0;">
+            Score Braden: <span id="braden-score">0</span>/23
+            <span id="braden-risque" class="risk-label"></span>
+        </p>
+    </div>
+    <!-- Morse -->
+    <div class="risk-section">
+        <div class="risk-header">
+            <h3 style="margin:0;">Risque de chutes (Échelle de Morse)</h3>
+        </div>
+        <label class="eval-critere">Historique de chutes</label>
+        <select id="morse-history" onchange="calculateRisks()">
+            <option value="0">Non (0)</option>
+            <option value="25">Oui (25)</option>
+        </select>
+        <label class="eval-critere">Diagnostic secondaire</label>
+        <select id="morse-secondary" onchange="calculateRisks()">
+            <option value="0">Non (0)</option>
+            <option value="15">Oui (15)</option>
+        </select>
+        <label class="eval-critere">Aide à la marche</label>
+        <select id="morse-aid" onchange="calculateRisks()">
+            <option value="0">Aucune/lit/aide soignant (0)</option>
+            <option value="15">Béquilles/canne/déambulateur (15)</option>
+            <option value="30">Mobilier (30)</option>
+        </select>
+        <label class="eval-critere">Thérapie IV/accès veineux</label>
+        <select id="morse-iv" onchange="calculateRisks()">
+            <option value="0">Non (0)</option>
+            <option value="20">Oui (20)</option>
+        </select>
+        <label class="eval-critere">Démarche</label>
+        <select id="morse-gait" onchange="calculateRisks()">
+            <option value="0">Normale/lit/fauteuil roulant (0)</option>
+            <option value="10">Faible (10)</option>
+            <option value="20">Démarche altérée (20)</option>
+        </select>
+        <label class="eval-critere">État mental</label>
+        <select id="morse-mental" onchange="calculateRisks()">
+            <option value="0">Orienté vers ses capacités (0)</option>
+            <option value="15">Surévalue ses capacités (15)</option>
+        </select>
+        <p style="margin-bottom:0;">
+            Score Morse: <span id="morse-score">0</span>/125
+            <span id="morse-risque" class="risk-label"></span>
+        </p>
+    </div>
+    <!-- Infection -->
+    <div class="risk-section">
+        <div class="risk-header">
+            <h3 style="margin:0;">Risque d'infection</h3>
+            <button type="button" onclick="addDeviceFromEval()">Ajouter un dispositif</button>
+        </div>
+        <label class="eval-critere">Âge</label>
+        <select id="infection-age" onchange="calculateRisks()">
+            <option value="0">&lt; 65 ans (0)</option>
+            <option value="1">65-80 ans (1)</option>
+            <option value="2">&gt; 80 ans (2)</option>
+        </select>
+        <label class="eval-critere">Immunosuppression</label>
+        <select id="infection-immuno" onchange="calculateRisks()">
+            <option value="0">Non (0)</option>
+            <option value="2">Oui (2)</option>
+        </select>
+        <label class="eval-critere">Antibiotiques récents</label>
+        <select id="infection-antibiotics" onchange="calculateRisks()">
+            <option value="0">Non (0)</option>
+            <option value="1">Oui (1)</option>
+        </select>
+        <label class="eval-critere">Chirurgie récente</label>
+        <select id="infection-surgery" onchange="calculateRisks()">
+            <option value="0">Non (0)</option>
+            <option value="1">Oui (1)</option>
+        </select>
+        <label class="eval-critere">Comorbidités</label>
+        <select id="infection-comorbidities" onchange="calculateRisks()">
+            <option value="0">Aucune (0)</option>
+            <option value="1">1-2 comorbidités (1)</option>
+            <option value="2">3+ comorbidités (2)</option>
+        </select>
+        <div style="margin-top:12px;">
+            <label class="eval-critere" style="font-size:1.02em; font-weight:600;">
+                Dispositifs invasifs pour ce patient
+            </label>
+            <ul id="devices-list"></ul>
+        </div>
+        <p style="margin-bottom:0;">
+            Score dispositifs: <span id="devices-score">0</span>
+        </p>
+        <p style="margin-bottom:0;">
+            Score Infection: <span id="infection-score">0</span>/10
+            <span id="infection-risque" class="risk-label"></span>
+        </p>
+    </div>
+    <button onclick="calculateRisks()">Calculer les risques</button>
+    <button onclick="generateCarePlan()">Générer plan de soins</button>
 </section>
 <section id="care-plans-section" class="hidden">
     <h2>Plans de soins générés</h2>
