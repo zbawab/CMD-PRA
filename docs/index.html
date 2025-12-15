@@ -740,48 +740,53 @@ function generateCarePlan(isUpdate = false, updatePlanId=null) {
 function updateCarePlans() {
     const output = document.getElementById('care-plan-output');
     output.innerHTML = '';
-    // Groupe par patient
+    // Groupe les plans par patient
     const patientsWithPlans = {};
     carePlans.forEach(cp => {
         if(!patientsWithPlans[cp.patient.id]) patientsWithPlans[cp.patient.id] = [];
         patientsWithPlans[cp.patient.id].push(cp);
     });
-    Object.keys(patientsWithPlans).forEach(pid=>{
+    Object.keys(patientsWithPlans).forEach(pid => {
         const plans = patientsWithPlans[pid];
-        const cp = plans[plans.length - 1]; // prend le DERNIER plan du patient (cas le + courant)
-        const pat = cp.patient;
-        const bradenLab = getRiskLabel(cp.risques.braden,"braden");
-        const morseLab  = getRiskLabel(cp.risques.morse,"morse");
-        const infLab    = getRiskLabel(cp.risques.infection,"infection");
-        const div = document.createElement('div');
-        div.style.border = "1px solid #cdf";
-        div.style.margin = "18px 0";
-        div.style.borderRadius="12px";
-        div.style.background="#f4faff";
-        div.style.boxShadow="0 2px 8px #cbeafc40";
-        // Texte : plan unique par patient
-        div.innerHTML = `
-            <h3 style="color:#005e87;padding:.3em 0 .3em 1em">🧑‍⚕️ ${pat.name} ${pat.firstname}</h3>
-            <p style="margin:8px 0 0 1em"><b>Plan généré le ${cp.createdAt} par ${cp.createdBy}</b> 
-            <span style="float:right;font-size:0.94em;color:#444">Dernière maj. ${cp.lastUpdate||cp.createdAt}</span></p>
-            <ul style="margin-left:2em;margin-bottom:8px">
-              <li>Escarres: <span class="risk-label ${bradenLab.class}">${bradenLab.text}</span> (Braden ${cp.risques.braden})</li>
-              <li>Chutes: <span class="risk-label ${morseLab.class}">${morseLab.text}</span> (Morse ${cp.risques.morse})</li>
-              <li>Infection: <span class="risk-label ${infLab.class}">${infLab.text}</span> (Score Infection ${cp.risques.infection})</li>
-            </ul>
-            <div class="plan-actions"><div class="plan-actions-title">Actions recommandées :</div>
-            <ul class="plan-actions-list">
-                ${(cp.actions||[]).map(act=>`<li>${act}</li>`).join('')}
-            </ul>
-            </div>
-            <button onclick="downloadCarePlanSingle(${cp.id})" style="margin:14px 0 0 1.6em;padding:8px 15px;background:#0a9a46;">Télécharger ce plan de soins</button>
-            <div class="plan-historique" style="margin-top:12px;">
-                <b>Historique de mises à jour :</b>
+        const pat = plans[0].patient;
+        const patientDiv = document.createElement('div');
+        patientDiv.style.border = "1px solid #cdf";
+        patientDiv.style.margin = "18px 0";
+        patientDiv.style.borderRadius="12px";
+        patientDiv.style.background="#f4faff";
+        patientDiv.style.boxShadow="0 2px 8px #cbeafc40";
+        patientDiv.innerHTML = `<h3 style="color:#005e87;padding:.3em 0 .3em 1em">🧑‍⚕️ ${pat.name} ${pat.firstname}</h3>`;
+        // --- Affiche CHAQUE plan de ce patient ---
+        plans.forEach(cp => {
+            let bradenLab = getRiskLabel(cp.risques.braden,"braden");
+            let morseLab  = getRiskLabel(cp.risques.morse,"morse");
+            let infLab    = getRiskLabel(cp.risques.infection,"infection");
+            const div = document.createElement('div');
+            div.style.marginLeft = "18px";
+            div.style.marginRight="8px";
+            div.style.marginBottom="1.5em";
+            div.innerHTML = `
+                <p><b>Plan généré le ${cp.createdAt} par ${cp.createdBy}</b> 
+                <span style="float:right;font-size:0.94em;color:#444">Dernière maj. ${cp.lastUpdate||cp.createdAt}</span></p>
+                <ul style="margin-left:1.5em;">
+                  <li>Escarres: <span class="risk-label ${bradenLab.class}">${bradenLab.text}</span> (Braden ${cp.risques.braden})</li>
+                  <li>Chutes: <span class="risk-label ${morseLab.class}">${morseLab.text}</span> (Morse ${cp.risques.morse})</li>
+                  <li>Infection: <span class="risk-label ${infLab.class}">${infLab.text}</span> (Infection ${cp.risques.infection})</li>
+                </ul>
+                <div class="plan-actions"><div class="plan-actions-title">Actions recommandées :</div>
+                <ul class="plan-actions-list">
+                    ${(cp.actions||[]).map(act=>`<li>${act}</li>`).join('')}
+                </ul></div>
+                <button onclick="downloadCarePlanSingle(${cp.id})" style="margin:6px 0 0 1.3em;padding:8px 15px;background:#0a9a46;">Télécharger ce plan de soins</button>
+                <div class="plan-historique" style="margin-top:8px;">
+                <b>Historique de mises à jour :</b>
                 ${(cp.history && cp.history.length>0) ? cp.history.map(h => 
                     `<div class="plan-historique-entry">Modifié le <b>${h.date}</b> par <i>${h.by}</i></div>
                     <ul>${(h.actions || []).map(a=>`<li>${a}</li>`).join('')}</ul>`).join('') : '<div>Aucune mise à jour.</div>'}
-            </div>`;
-        output.appendChild(div);
+                </div>`;
+            patientDiv.appendChild(div);    
+        });
+        output.appendChild(patientDiv);
     });
 
     // Mise à jour du select admin
