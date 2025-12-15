@@ -689,9 +689,9 @@ function addDeviceFromEval() {
 }
 
 // ------------ PLANS DE SOINS ----------------
-function generateCarePlan(isUpdate = false, updatePlanId=null) {
+function generateCarePlan(isUpdate = false, updatePlanId = null) {
     const selectedPatientId = document.getElementById('patient-select').value;
-    if (selectedPatientId === '' || selectedPatientId=="Sélectionner un patient...") {
+    if (selectedPatientId === '' || selectedPatientId == "Sélectionner un patient...") {
         alert("Sélectionnez un patient !");
         return;
     }
@@ -703,13 +703,13 @@ function generateCarePlan(isUpdate = false, updatePlanId=null) {
     };
     let now = formatDate(new Date());
     let by = currentUserFullName;
-    if(isUpdate && updatePlanId!=null){
-        let plan = carePlans.find(p=>p.id==updatePlanId);
-        if(plan){
-            if(!plan.history) plan.history=[];
+    if (isUpdate && updatePlanId != null) {
+        let plan = carePlans.find(p => p.id == updatePlanId);
+        if (plan) {
+            if (!plan.history) plan.history = [];
             plan.history.push({
-                date: now,
-                by: by,
+                date: plan.lastUpdate || plan.createdAt,
+                by: plan.lastUpdateBy || plan.createdBy,
                 risques: plan.risques,
                 actions: plan.actions
             });
@@ -717,10 +717,13 @@ function generateCarePlan(isUpdate = false, updatePlanId=null) {
             plan.lastUpdate = now;
             plan.lastUpdateBy = by;
             plan.actions = getCareActions(risques);
+            saveAll();
+            updateCarePlans();
+            setTimeout(()=>{ alert("Plan de soins mis à jour ! Veuillez vérifier dans le volet 'Plans de soins'."); }, 200);
         }
     } else {
         const plan = {
-            id: carePlans.length>0 ? Math.max(...carePlans.map(p=>p.id))+1 : 0,
+            id: carePlans.length > 0 ? Math.max(...carePlans.map(p => p.id)) + 1 : 0,
             patient: patient,
             risques: risques,
             actions: getCareActions(risques),
@@ -731,11 +734,10 @@ function generateCarePlan(isUpdate = false, updatePlanId=null) {
             lastUpdateBy: by
         };
         carePlans.push(plan);
+        saveAll();
+        updateCarePlans();
+        setTimeout(()=>{ alert("Plan de soins généré ! Veuillez vérifier dans le volet 'Plans de soins'."); }, 200);
     }
-    updateCarePlans();
-    document.getElementById('download-plan').classList.remove('hidden');
-    saveAll();
-    setTimeout(()=>{ alert("Plan de soins généré ! Veuillez vérifier dans le volet 'Plans de soins'."); },200);
 }
 function updateCarePlans() {
     const output = document.getElementById('care-plan-output');
