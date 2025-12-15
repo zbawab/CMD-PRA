@@ -43,11 +43,11 @@
             background-color: #e0e0e0;
         }
         .container {
-            max-width: 800px;
+            max-width: 880px;
             width: 100%;
             padding: 20px;
             background-color: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0,0,0,0.07);
             margin: 20px 0;
             border-radius: 8px;
         }
@@ -55,12 +55,12 @@
             display: flex;
             flex-direction: column;
         }
-        label {
-            margin-top: 10px;
-            font-weight: bold;
+        label.eval-critere {
+            margin-bottom: 6px;
+            margin-top: 12px;
         }
         input, select, button, textarea {
-            margin: 5px 0;
+            margin: 4px 0 12px 0;
             padding: 10px;
             font-size: 16px;
             border-radius: 5px;
@@ -84,31 +84,36 @@
             display: none;
         }
         .risk-section {
-            margin: 20px 0;
+            margin: 22px 0 25px 0;
             background-color: #f8f9fa;
-            padding: 15px;
+            padding: 18px 12px 18px 12px;
             border-radius: 8px;
         }
-        .alert-high {
-            background-color: #c0392b;
-            color: white;
-            padding: 10px;
-            font-weight: bold;
-            border-radius: 5px;
+        .risk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
         }
-        .alert-moderate {
-            background-color: #d35400;
-            color: white;
-            padding: 10px;
-            font-weight: bold;
-            border-radius: 5px;
+        .alert-high, .critere-gravite.eleve {
+            background-color: #c0392b !important;
+            color: white !important;
         }
-        .alert-low {
-            background-color: #f1c40f;
-            color: black;
-            padding: 10px;
+        .alert-moderate, .critere-gravite.modere {
+            background-color: #d35400 !important;
+            color: white !important;
+        }
+        .alert-low, .critere-gravite.faible {
+            background-color: #f1c40f !important;
+            color: #000 !important;
+        }
+        .critere-gravite {
             font-weight: bold;
-            border-radius: 5px;
+            padding: 7px 16px;
+            margin-top: 4px;
+            margin-bottom: 14px;
+            display: inline-block;
+            border-radius: 2.5px;
         }
         .device-critical {
             color: #c0392b;
@@ -119,7 +124,7 @@
             font-weight: bold;
         }
         #admin-controls {
-            margin-top: 20px;
+            margin-top: 24px;
             background-color: #f8d7da;
             padding: 10px;
             border-radius: 5px;
@@ -134,9 +139,29 @@
             padding: 10px;
             border-radius: 5px;
         }
+        .patient-meta {
+            font-size: 0.89em;
+            color: #888;
+            margin-top: 2px;
+            line-height: 1.3;
+        }
+        .plan-historique {
+            font-size: 0.9em;
+            margin-top: 9px;
+        }
+        .plan-historique-entry {
+            margin-bottom: 4px;
+        }
+        .plan-update-btn {
+            margin-top: 8px;
+            background-color: #007bff !important;
+        }
+        .plan-update-btn:hover {
+            background-color: #0056b3 !important;
+        }
         @media (max-width: 600px) {
             .container {
-                padding: 10px;
+                padding: 8px;
             }
             input, select, button {
                 font-size: 14px;
@@ -162,10 +187,8 @@
         <form id="login-form" onsubmit="login(); return false;">
             <label for="full-name">Nom complet</label>
             <input type="text" id="full-name" required placeholder="Entrez votre nom complet">
-
             <label for="email">Compte mail CMD</label>
             <input type="email" id="email" required placeholder="prenom.nom@cmd.cd">
-
             <label for="service">Service</label>
             <select id="service" required>
                 <option>-- Sélectionnez le service --</option>
@@ -175,12 +198,10 @@
                 <option>Pédiatrie</option>
                 <option>Soins Intensifs</option>
             </select>
-
             <button type="submit">Se connecter</button>
         </form>
     </div>
 
-    <!-- Navigation après connexion -->
     <nav id="nav" class="hidden">
         <button onclick="showSection('patients')">Liste des Patients</button>
         <button onclick="showSection('evaluation')">Évaluation</button>
@@ -189,7 +210,6 @@
         <button id="admin-nav-btn" class="hidden" onclick="showSection('admin-controls')">Admin</button>
     </nav>
 
-    <!-- Sections après connexion -->
     <div id="app" class="container hidden">
         <!-- Section Liste des Patients -->
         <section id="patients-section">
@@ -197,15 +217,15 @@
             <ul id="patient-list"></ul>
             <button onclick="showNewPatientForm()">Nouveau patient</button>
             <form id="new-patient-form" class="hidden" onsubmit="addPatient(); return false;">
-                <label for="patient-name">Nom</label>
+                <label class="eval-critere" for="patient-name">Nom</label>
                 <input type="text" id="patient-name" required placeholder="Nom du patient">
-                <label for="patient-firstname">Prénom</label>
+                <label class="eval-critere" for="patient-firstname">Prénom</label>
                 <input type="text" id="patient-firstname" required placeholder="Prénom du patient">
-                <label for="patient-age">Âge</label>
+                <label class="eval-critere" for="patient-age">Âge</label>
                 <input type="number" id="patient-age" required min="0" max="120" placeholder="ex : 65">
-                <label for="patient-room">Chambre</label>
+                <label class="eval-critere" for="patient-room">Chambre</label>
                 <input type="text" id="patient-room" required placeholder="Numéro de chambre">
-                <label for="patient-diagnosis">Diagnostic principal</label>
+                <label class="eval-critere" for="patient-diagnosis">Diagnostic principal</label>
                 <input type="text" id="patient-diagnosis" required placeholder="Diagnostic principal">
                 <button type="submit">Ajouter</button>
                 <button type="button" class="annuler-btn" onclick="hideNewPatientForm()">Annuler</button>
@@ -215,125 +235,142 @@
         <!-- Section Évaluation -->
         <section id="evaluation-section" class="hidden">
             <h2>Évaluation des risques</h2>
-            <label for="patient-select">Sélectionnez un patient</label>
-            <select id="patient-select"></select>
+            <label class="eval-critere" for="patient-select">Sélectionnez un patient</label>
+            <select id="patient-select" onchange="updateEvalDevices()"></select>
+            
             <!-- Risque d'escarres (Échelle de Braden) -->
             <div class="risk-section">
-                <h3>Risque d'escarres (Échelle de Braden)</h3>
-                <label>Perception sensorielle</label>
+                <div class="risk-header">
+                    <h3 style="margin:0;">Risque d'escarres (Échelle de Braden)</h3>
+                </div>
+                <label class="eval-critere">Perception sensorielle</label>
                 <select id="braden-sensory">
                     <option value="1">Complètement limitée (1)</option>
                     <option value="2">Très limitée (2)</option>
                     <option value="3">Légèrement limitée (3)</option>
                     <option value="4">Aucune limitation (4)</option>
                 </select>
-                <label>Humidité</label>
+                <label class="eval-critere">Humidité</label>
                 <select id="braden-humidity">
                     <option value="1">Constamment humide (1)</option>
                     <option value="2">Très humide (2)</option>
                     <option value="3">Occasionnellement humide (3)</option>
                     <option value="4">Rarement humide (4)</option>
                 </select>
-                <label>Activité</label>
+                <label class="eval-critere">Activité</label>
                 <select id="braden-activity">
                     <option value="1">Alité (1)</option>
                     <option value="2">En fauteuil (2)</option>
                     <option value="3">Marche occasionnellement (3)</option>
                     <option value="4">Marche fréquemment (4)</option>
                 </select>
-                <label>Mobilité</label>
+                <label class="eval-critere">Mobilité</label>
                 <select id="braden-mobility">
                     <option value="1">Complètement immobile (1)</option>
                     <option value="2">Très limitée (2)</option>
                     <option value="3">Légèrement limitée (3)</option>
                     <option value="4">Aucune limitation (4)</option>
                 </select>
-                <label>Nutrition</label>
+                <label class="eval-critere">Nutrition</label>
                 <select id="braden-nutrition">
                     <option value="1">Très pauvre (1)</option>
                     <option value="2">Probablement inadéquate (2)</option>
                     <option value="3">Adéquate (3)</option>
                     <option value="4">Excellente (4)</option>
                 </select>
-                <label>Friction et cisaillement</label>
+                <label class="eval-critere">Friction et cisaillement</label>
                 <select id="braden-friction">
                     <option value="1">Problème (1)</option>
                     <option value="2">Problème potentiel (2)</option>
                     <option value="3">Aucun problème apparent (3)</option>
                 </select>
-                <p>Score Braden: <span id="braden-score">0</span>/23</p>
+                <p style="margin-bottom:0;">Score Braden: <span id="braden-score">0</span>/23</p>
+                <span id="braden-gravite" class="critere-gravite"></span>
             </div>
+
             <!-- Risque de chutes (Échelle de Morse) -->
             <div class="risk-section">
-                <h3>Risque de chutes (Échelle de Morse)</h3>
-                <label>Historique de chutes</label>
+                <div class="risk-header">
+                    <h3 style="margin:0;">Risque de chutes (Échelle de Morse)</h3>
+                </div>
+                <label class="eval-critere">Historique de chutes</label>
                 <select id="morse-history">
                     <option value="0">Non (0)</option>
                     <option value="25">Oui (25)</option>
                 </select>
-                <label>Diagnostic secondaire</label>
+                <label class="eval-critere">Diagnostic secondaire</label>
                 <select id="morse-secondary">
                     <option value="0">Non (0)</option>
                     <option value="15">Oui (15)</option>
                 </select>
-                <label>Aide à la marche</label>
+                <label class="eval-critere">Aide à la marche</label>
                 <select id="morse-aid">
                     <option value="0">Aucune/lit/aide soignant (0)</option>
                     <option value="15">Béquilles/canne/déambulateur (15)</option>
                     <option value="30">Mobilier (30)</option>
                 </select>
-                <label>Thérapie IV/accès veineux</label>
+                <label class="eval-critere">Thérapie IV/accès veineux</label>
                 <select id="morse-iv">
                     <option value="0">Non (0)</option>
                     <option value="20">Oui (20)</option>
                 </select>
-                <label>Démarche</label>
+                <label class="eval-critere">Démarche</label>
                 <select id="morse-gait">
                     <option value="0">Normale/lit/fauteuil roulant (0)</option>
                     <option value="10">Faible (10)</option>
                     <option value="20">Démarche altérée (20)</option>
                 </select>
-                <label>État mental</label>
+                <label class="eval-critere">État mental</label>
                 <select id="morse-mental">
                     <option value="0">Orienté vers ses capacités (0)</option>
                     <option value="15">Surévalue ses capacités (15)</option>
                 </select>
-                <p>Score Morse: <span id="morse-score">0</span>/125</p>
+                <p style="margin-bottom:0;">Score Morse: <span id="morse-score">0</span>/125</p>
+                <span id="morse-gravite" class="critere-gravite"></span>
             </div>
-            <!-- Risque d'infection -->
+
+            <!-- Risque d'infection avec ajout dispositif -->
             <div class="risk-section">
-                <h3>Risque d'infection</h3>
-                <label>Âge</label>
+                <div class="risk-header">
+                    <h3 style="margin:0;">Risque d'infection</h3>
+                    <button type="button" onclick="addDeviceFromEval()">Ajouter un dispositif</button>
+                </div>
+                <label class="eval-critere">Âge</label>
                 <select id="infection-age">
                     <option value="0">&lt; 65 ans (0)</option>
                     <option value="1">65-80 ans (1)</option>
                     <option value="2">&gt; 80 ans (2)</option>
                 </select>
-                <label>Immunosuppression</label>
+                <label class="eval-critere">Immunosuppression</label>
                 <select id="infection-immuno">
                     <option value="0">Non (0)</option>
                     <option value="2">Oui (2)</option>
                 </select>
-                <label>Antibiotiques récents</label>
+                <label class="eval-critere">Antibiotiques récents</label>
                 <select id="infection-antibiotics">
                     <option value="0">Non (0)</option>
                     <option value="1">Oui (1)</option>
                 </select>
-                <label>Chirurgie récente</label>
+                <label class="eval-critere">Chirurgie récente</label>
                 <select id="infection-surgery">
                     <option value="0">Non (0)</option>
                     <option value="1">Oui (1)</option>
                 </select>
-                <label>Comorbidités</label>
+                <label class="eval-critere">Comorbidités</label>
                 <select id="infection-comorbidities">
                     <option value="0">Aucune (0)</option>
                     <option value="1">1-2 comorbidités (1)</option>
                     <option value="2">3+ comorbidités (2)</option>
                 </select>
-                <label>Dispositifs invasifs</label>
-                <p id="infection-devices">Score dispositifs: <span id="devices-score">0</span></p>
-                <ul id="devices-list"></ul>
-                <p>Score infection: <span id="infection-score">0</span>/10</p>
+                <div style="margin-top:12px;">
+                    <label class="eval-critere" style="font-size:1.02em; font-weight:600;">
+                        Dispositifs invasifs pour ce patient
+                    </label>
+                    <ul id="devices-list"></ul>
+                </div>
+                <p style="margin-bottom:0;">Score dispositifs: <span id="devices-score">0</span></p>
+                <p style="margin-bottom:0;">Score infection: <span id="infection-score">0</span>/10</p>
+                <span id="infection-gravite" class="critere-gravite"></span>
             </div>
             <button onclick="calculateRisks()">Calculer les risques</button>
             <button onclick="generateCarePlan()">Générer plan de soins</button>
@@ -351,9 +388,9 @@
             <h2>Gestion des Dispositifs Invasifs</h2>
             <button onclick="showNewDeviceForm()">Nouveau dispositif</button>
             <form id="new-device-form" class="hidden" onsubmit="addDevice(); return false;">
-                <label for="device-patient">Patient</label>
+                <label class="eval-critere" for="device-patient">Patient</label>
                 <select id="device-patient"></select>
-                <label for="device-type">Type de dispositif</label>
+                <label class="eval-critere" for="device-type">Type de dispositif</label>
                 <select id="device-type">
                     <option>Sélectionner un type</option>
                     <option>Cathéter Central</option>
@@ -367,13 +404,13 @@
                     <option>Cathéter de Dialyse</option>
                     <option>Autre</option>
                 </select>
-                <label for="device-location">Localisation</label>
+                <label class="eval-critere" for="device-location">Localisation</label>
                 <input type="text" id="device-location" required placeholder="Ex: membre supérieur droit">
-                <label for="device-insertion">Date/Heure d'insertion</label>
+                <label class="eval-critere" for="device-insertion">Date/Heure d'insertion</label>
                 <input type="datetime-local" id="device-insertion" required>
-                <label for="device-notes">Notes</label>
+                <label class="eval-critere" for="device-notes">Notes</label>
                 <textarea id="device-notes" placeholder="Commentaires..."></textarea>
-                <label for="device-criticality">Degré de criticité</label>
+                <label class="eval-critere" for="device-criticality">Degré de criticité</label>
                 <select id="device-criticality">
                     <option value="ok">Bon (vert)</option>
                     <option value="critical">À retirer (rouge)</option>
@@ -401,6 +438,7 @@
         let devices = [];
         let carePlans = [];
         let currentUserEmail = '';
+        let currentUserFullName = '';
         let currentSection = 'patients';
 
         function goHome() {
@@ -409,7 +447,9 @@
 
         function login() {
             const email = document.getElementById('email').value;
+            const fullName = document.getElementById('full-name').value;
             currentUserEmail = email;
+            currentUserFullName = fullName;
             document.getElementById('home').classList.add('hidden');
             document.getElementById('nav').classList.remove('hidden');
             document.getElementById('app').classList.remove('hidden');
@@ -431,12 +471,14 @@
             else document.getElementById(`${section}-section`).classList.remove('hidden');
             currentSection = section;
             updateAdminSelects();
+            if(section=="evaluation") updateEvalDevices();
         }
 
         function loadData() {
-            // Simulation de données partagées
+            // Données initiales
             patients = [
-                { id: 0, name: 'Doe', firstname: 'John', age: 50, room: '101', diagnosis: 'Exemple' }
+                { id: 0, name: 'Doe', firstname: 'John', age: 50, room: '101', diagnosis: 'Exemple',
+                  createdAt: (new Date()).toLocaleString(), createdBy: 'Systeme'}
             ];
             devices = [];
             carePlans = [];
@@ -460,7 +502,9 @@
                 firstname: document.getElementById('patient-firstname').value,
                 age: document.getElementById('patient-age').value,
                 room: document.getElementById('patient-room').value,
-                diagnosis: document.getElementById('patient-diagnosis').value
+                diagnosis: document.getElementById('patient-diagnosis').value,
+                createdAt: (new Date()).toLocaleString(),
+                createdBy: currentUserFullName
             };
             patients.push(patient);
             updatePatientList();
@@ -473,6 +517,10 @@
             patients.forEach(p => {
                 const li = document.createElement('li');
                 li.textContent = `${p.name} ${p.firstname} - Âge: ${p.age} - Chambre: ${p.room}`;
+                const meta = document.createElement('div');
+                meta.className = "patient-meta";
+                meta.textContent = `Ajouté le ${p.createdAt ?? ''} par ${p.createdBy ?? ''}`;
+                li.appendChild(meta);
                 list.appendChild(li);
             });
         }
@@ -497,7 +545,7 @@
 
         // EVALUATION
         function calculateRisks() {
-            // Braden
+            // BRADEN
             const braden = 
                   parseInt(document.getElementById('braden-sensory').value)
                 + parseInt(document.getElementById('braden-humidity').value)
@@ -506,7 +554,16 @@
                 + parseInt(document.getElementById('braden-nutrition').value)
                 + parseInt(document.getElementById('braden-friction').value);
             document.getElementById('braden-score').textContent = braden;
-            // Morse
+            // Braden gravité
+            let bradenRisq = '';
+            let bradenC = '';
+            if (braden <= 12) { bradenRisq = "Risque élevé"; bradenC="eleve"; }
+            else if (braden <= 16) { bradenRisq = "Risque modéré"; bradenC="modere";}
+            else { bradenRisq = "Risque faible"; bradenC="faible";}
+            document.getElementById('braden-gravite').textContent = bradenRisq;
+            document.getElementById('braden-gravite').className = 'critere-gravite ' + bradenC;
+
+            // MORSE
             const morse = 
                 parseInt(document.getElementById('morse-history').value)
                 + parseInt(document.getElementById('morse-secondary').value)
@@ -515,9 +572,21 @@
                 + parseInt(document.getElementById('morse-gait').value)
                 + parseInt(document.getElementById('morse-mental').value);
             document.getElementById('morse-score').textContent = morse;
-            // Infection
-            const devicesScore = devices.reduce((sum, d) => sum + (d.criticality === 'critical' ? 2 : 1), 0);
+            // Morse gravité
+            let morseRisq = '';
+            let morseC = '';
+            if(morse >= 51) { morseRisq="Risque élevé"; morseC="eleve";}
+            else if(morse >= 25) { morseRisq="Risque modéré"; morseC="modere";}
+            else { morseRisq="Risque faible"; morseC="faible";}
+            document.getElementById('morse-gravite').textContent = morseRisq;
+            document.getElementById('morse-gravite').className = 'critere-gravite '+ morseC;
+
+            // INFECTION (uniquement dispositifs du patient sélectionné)
+            const pid = document.getElementById('patient-select').value;
+            const patientDevices = devices.filter(d => d.patientId == pid);
+            const devicesScore = patientDevices.reduce((sum, d) => sum + (d.criticality === 'critical' ? 2 : 1), 0);
             document.getElementById('devices-score').textContent = devicesScore;
+
             const infection = 
                 parseInt(document.getElementById('infection-age').value)
                 + parseInt(document.getElementById('infection-immuno').value)
@@ -526,24 +595,61 @@
                 + parseInt(document.getElementById('infection-comorbidities').value)
                 + devicesScore;
             document.getElementById('infection-score').textContent = Math.min(infection, 10);
+
+            // Infection gravité
+            let infRisq = '';
+            let infC = '';
+            if(infection >= 7) { infRisq="Risque élevé"; infC="eleve";}
+            else if(infection >= 4) { infRisq="Risque modéré"; infC="modere";}
+            else {infRisq="Risque faible"; infC="faible";}
+            document.getElementById('infection-gravite').textContent = infRisq;
+            document.getElementById('infection-gravite').className = 'critere-gravite '+infC;
         }
-        function generateCarePlan() {
+
+        function generateCarePlan(isUpdate = false, updatePlanId=null) {
             const selectedPatientId = document.getElementById('patient-select').value;
-            if (selectedPatientId === '' || selectedPatientId=="Sélectionner un patient...") return;
+            if (selectedPatientId === '' || selectedPatientId=="Sélectionner un patient...") {
+                alert("Sélectionnez un patient !");
+                return;
+            }
             const patient = patients.find(p => p.id == selectedPatientId);
-            const plan = {
-                id: carePlans.length>0 ? Math.max(...carePlans.map(p=>p.id))+1 : 0,
-                patient: patient,
-                risks: {
-                    braden: parseInt(document.getElementById('braden-score').textContent),
-                    morse: parseInt(document.getElementById('morse-score').textContent),
-                    infection: parseInt(document.getElementById('infection-score').textContent)
-                }
+            const risks = {
+                braden: parseInt(document.getElementById('braden-score').textContent),
+                morse: parseInt(document.getElementById('morse-score').textContent),
+                infection: parseInt(document.getElementById('infection-score').textContent)
             };
-            carePlans.push(plan);
+            let now = (new Date()).toLocaleString();
+            let by = currentUserFullName;
+            if(isUpdate && updatePlanId!=null){
+                let plan = carePlans.find(p=>p.id==updatePlanId);
+                if(plan){
+                    if(!plan.history) plan.history=[];
+                    plan.history.push({
+                        date: now,
+                        by: by,
+                        risks: plan.risks
+                    });
+                    plan.risks = risks;
+                    plan.lastUpdate = now;
+                    plan.lastUpdateBy = by;
+                }
+            } else {
+                const plan = {
+                    id: carePlans.length>0 ? Math.max(...carePlans.map(p=>p.id))+1 : 0,
+                    patient: patient,
+                    risks: risks,
+                    createdAt: now,
+                    createdBy: by,
+                    history: [],
+                    lastUpdate: now,
+                    lastUpdateBy: by
+                };
+                carePlans.push(plan);
+            }
             updateCarePlans();
             document.getElementById('download-plan').classList.remove('hidden');
         }
+
         function updateCarePlans() {
             const output = document.getElementById('care-plan-output');
             output.innerHTML = '';
@@ -551,12 +657,24 @@
                 let bradenLevel = cp.risks.braden <= 12 ? 'high' : (cp.risks.braden <= 16 ? 'moderate' : 'low');
                 let morseLevel = cp.risks.morse >= 51 ? 'high' : (cp.risks.morse >= 25 ? 'moderate' : 'low');
                 let infectionLevel = cp.risks.infection >= 7 ? 'high' : (cp.risks.infection >= 4 ? 'moderate' : 'low');
+                // Libellés
+                let bradenLbl = (bradenLevel=="high"? "Risque élevé": bradenLevel=="moderate"? "Risque modéré":"Risque faible");
+                let morseLbl = (morseLevel=="high"? "Risque élevé": morseLevel=="moderate"? "Risque modéré":"Risque faible");
+                let infLbl = (infectionLevel=="high"? "Risque élevé": infectionLevel=="moderate"? "Risque modéré":"Risque faible");
                 const div = document.createElement('div');
                 div.innerHTML = `
-                    <p>Plan pour ${cp.patient.name} ${cp.patient.firstname}:</p>
-                    <p class="alert-${bradenLevel}">Risque escarres: ${bradenLevel} (Score: ${cp.risks.braden})</p>
-                    <p class="alert-${morseLevel}">Risque chutes: ${morseLevel} (Score: ${cp.risks.morse})</p>
-                    <p class="alert-${infectionLevel}">Risque infection: ${infectionLevel} (Score: ${cp.risks.infection})</p>
+                    <p><b>Plan pour ${cp.patient.name} ${cp.patient.firstname}:</b> <span style="font-size:0.97em; color:#888;">(créé le ${cp.createdAt} par ${cp.createdBy})</span></p>
+                    <p class="alert-${bradenLevel}">Risque escarres: ${bradenLbl} (Score: ${cp.risks.braden})</p>
+                    <p class="alert-${morseLevel}">Risque chutes: ${morseLbl} (Score: ${cp.risks.morse})</p>
+                    <p class="alert-${infectionLevel}">Risque infection: ${infLbl} (Score: ${cp.risks.infection})</p>
+                    <button class="plan-update-btn" onclick="updatePlanDialog(${cp.id})">Mettre à jour ce plan</button>
+                    <div class="plan-historique">
+                        <b>Historique de mises à jour :</b>
+                        ${(cp.history && cp.history.length>0) ? cp.history.map(h => 
+                            `<div class="plan-historique-entry">Modifié le <b>${h.date}</b> par <i>${h.by}</i>
+                            (Braden: ${h.risks.braden}/23, Morse:${h.risks.morse}/125, Infection:${h.risks.infection}/10)</div>`).join('') : '<div>Aucune mise à jour.</div>'}
+                        <div class="plan-historique-entry" style="color:#007bff;"><b>Dernière modification</b> : ${cp.lastUpdate} par ${cp.lastUpdateBy}</div>
+                    </div>
                 `;
                 output.appendChild(div);
             });
@@ -572,6 +690,7 @@
                 });
             }
         }
+
         function downloadCarePlan() {
             const content = carePlans.map(cp => 
                 `Plan pour ${cp.patient.name}: Scores - Braden: ${cp.risks.braden}, Morse: ${cp.risks.morse}, Infection: ${cp.risks.infection}`
@@ -583,6 +702,30 @@
             a.download = 'plans_de_soins.txt';
             a.click();
             URL.revokeObjectURL(url);
+        }
+
+        // FONCTION update plan : re-remplit les critères puis regénère le plan
+        function updatePlanDialog(planId){
+            const cp = carePlans.find(p => p.id==planId);
+            if(cp){
+                showSection('evaluation');
+                document.getElementById('patient-select').value = cp.patient.id;
+                // Repeupler l'UI des scores
+                updateEvalDevices();
+                // Attributs : aucun stockage des critères séparés, donc réutilise les scores pour guider
+                // (Ici, les champs sont laissés aux valeurs courantes, ou on pourrait stocker tout le détail pour chaque plan dans l'objet "plan" si besoin plus tard !)
+                setTimeout(()=>{
+                    calculateRisks();
+                    // Suggérer visuel pour l'utilisateur de cliquer sur Générer plan de soins pour valider la mise à jour.
+                },90);
+                // Ajoute l'instruction
+                alert("Réalisez d'éventuelles modifications puis cliquez de nouveau sur 'Générer plan de soins' pour enregistrer la mise à jour.");
+                // Sauvegarde la mise à jour au clic du bouton
+                document.querySelector("#evaluation-section button[onclick*='generateCarePlan']").onclick=function(){
+                    generateCarePlan(true, planId);
+                    showSection('care-plans');
+                };
+            }
         }
 
         // DISPOSITIFS
@@ -604,21 +747,48 @@
             };
             devices.push(device);
             updateDevicesList();
+            updateEvalDevices();
             hideNewDeviceForm();
         }
         function updateDevicesList() {
             const fullList = document.getElementById('devices-full-list');
-            const evalList = document.getElementById('devices-list');
             if(fullList) fullList.innerHTML = '';
-            if(evalList) evalList.innerHTML = '';
             devices.forEach(d => {
                 const patient = patients.find(p => p.id == d.patientId);
                 const className = d.criticality === 'critical' ? 'device-critical' : 'device-ok';
                 const li = document.createElement('li');
                 li.innerHTML = `<span class="${className}">${patient ? patient.name + ' ' + patient.firstname : 'Inconnu'} - ${d.type} (${d.criticality === 'critical' ? 'À retirer' : 'Bon'})</span>`;
                 if(fullList) fullList.appendChild(li.cloneNode(true));
-                if(evalList) evalList.appendChild(li);
             });
+        }
+        // Dispositifs du patient dans page évaluation
+        function updateEvalDevices() {
+            const evalList = document.getElementById('devices-list');
+            if(!evalList) return;
+            evalList.innerHTML='';
+            const pid = document.getElementById('patient-select').value;
+            const pats = patients.filter(p=>p.id==pid);
+            if(pid==='' || pats.length===0) return;
+            const patDevices = devices.filter(d=>d.patientId==pid);
+            patDevices.forEach(d=>{
+                const className = d.criticality === 'critical' ? 'device-critical' : 'device-ok';
+                const li = document.createElement('li');
+                li.innerHTML = `${d.type} (${d.criticality==='critical' ? 'À retirer' : 'Bon'}) <span class="${className}">(${d.location || 'non précisée'})</span> `;
+                evalList.appendChild(li);
+            })
+            // Score update :
+            calculateRisks();
+        }
+        // Bouton ajout dispositif dans évaluation
+        function addDeviceFromEval() {
+            const pid = document.getElementById('patient-select').value;
+            if (pid !== "") {
+                showSection('devices');
+                showNewDeviceForm();
+                document.getElementById('device-patient').value = pid;
+            } else {
+                alert("Veuillez d'abord sélectionner un patient !");
+            }
         }
 
         // ADMIN
