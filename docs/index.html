@@ -1,92 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Management App</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        .hidden { display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareRisk - Évaluation des Risques Patients</title>
+<style>
+body { font-family: Arial,sans-serif; margin:0; padding:0; background:linear-gradient(132deg,#e7ebf5,#d6f1fb 60%,#e9d9f6 100%); min-height:100vh; color:#333; display:flex; flex-direction:column; align-items:center;}
+header { background:#0056b3; color:white; width:100%; text-align:center; padding-top:10px; padding-bottom:7px; display:flex; flex-direction:column; align-items:center; box-shadow:0 4px 8px rgba(70,90,120,0.06); cursor:pointer;}
+#user-bar {margin-bottom: 12px; color:#0056b3; font-size:1.1em; font-weight:600; text-align:center;}
+h1 { margin:0 0 8px 0; font-size:2.1em; font-weight:bold; letter-spacing:0.5px;}
+nav { background-color:#007bff; width:100%; padding:10px 0 10px 0; text-align:center;}
+nav button { margin:6px 7px; padding:10px 15px; background-color:#fff; border:none; border-radius:5px; cursor:pointer; font-weight:bold; color:#0056b3; transition:0.2s;}
+.container { max-width:900px; width:98%; padding:22px 20px; background-color:white; box-shadow:0 4px 14px rgba(40,70,100,0.09); margin:26px 0 26px 0; border-radius:12px;}
+input, select, button { margin:4px 0 14px 0; padding:10px; font-size:16px; border-radius:5px; border:1px solid #ccc;}
+button { background-color:#28a745; color:white; cursor:pointer;}
+.hidden { display:none;}
+</style>
 </head>
 <body>
-    <header>
-        <h1>Patient Management Application</h1>
-    </header>
-    <main>
-        <section id="login-section">
-            <h2>Login</h2>
-            <form id="login-form" onsubmit="login(event);">
-                <label for="username">Username:</label>
-                <input type="text" id="username" required />
-                <label for="password">Password:</label>
-                <input type="password" id="password" required />
-                <button type="submit">Login</button>
-            </form>
-        </section>
-        <section id="patient-management-section" class="hidden">
-            <h2>Patient Management</h2>
-            <input type="text" id="search" placeholder="Filter by service" onkeyup="loadPatients();" />
-            <ul id="patient-list"></ul>
-        </section>
-        <section id="evaluation-section" class="hidden">
-            <h2>Evaluation</h2>
-            <form id="evaluation-form" onsubmit="submitEvaluation(event);">
-                <label for="patient">Patient:</label>
-                <input type="text" id="patient" required />
-                <label for="evaluation">Evaluation:</label>
-                <textarea id="evaluation" required></textarea>
-                <button type="submit">Submit Evaluation</button>
-            </form>
-        </section>
-        <section id="care-plans-section" class="hidden">
-            <h2>Care Plans</h2>
-            <p>List or manage care plans here.</p>
-        </section>
-    </main>
-    <script>
-        function login(event) {
-            event.preventDefault();
-            // Simulate login functionality
-            const username = document.getElementById('username').value;
-            if (username) {
-                document.getElementById('login-section').classList.add('hidden');
-                showSection('patient-management-section');
-                loadPatients();
-            }
+<header>
+    <h1>CareRisk - Évaluation des Risques Patients</h1>
+    <div id="user-bar" class="hidden"></div>
+</header>
+<div id="home" class="container">
+    <form id="login-form" onsubmit="login(event); return false;" style="margin-top:15px;max-width:330px;">
+        <label for="full-name" style="font-weight:bold;">Nom complet</label>
+        <input type="text" id="full-name" required placeholder="Votre nom complet">
+        <label for="email" style="font-weight:bold;">Compte mail CMD</label>
+        <input type="email" id="email" required placeholder="prenom.nom@cmd.cd">
+        <label for="service" style="font-weight:bold;">Service</label>
+        <select id="service" required>
+            <option value="">-- Sélectionnez le service --</option>
+            <option>Médecine</option>
+            <option>Chirurgie</option>
+            <option>Maternité</option>
+            <option>Pédiatrie</option>
+        </select>
+        <button type="submit">Se connecter</button>
+    </form>
+</div>
+<nav id="nav" class="hidden">
+    <button onclick="showSection('patients')">Patients</button>
+    <button onclick="logout()">Déconnexion</button>
+</nav>
+<div id="app" class="container hidden">
+    <section id="patients-section">
+        <h2>Liste des Patients</h2>
+        <p>Bienvenue!</p>
+    </section>
+</div>
+
+<script>
+    function login(event) {
+        event.preventDefault();
+        const fullName = document.getElementById('full-name').value;
+        const email = document.getElementById('email').value;
+        const service = document.getElementById('service').value;
+
+        if (!fullName || !email || !service) {
+            alert('Veuillez remplir tous les champs');
+            return;
         }
 
-        function showSection(sectionId) {
-            document.querySelectorAll('section').forEach((section) => {
-                section.classList.add('hidden');
-            });
-            document.getElementById(sectionId).classList.remove('hidden');
-        }
+        localStorage.setItem('user_name', fullName);
+        localStorage.setItem('user_email', email);
+        localStorage.setItem('user_service', service);
 
-        function loadPatients() {
-            // Simulated patient data
-            const patients = [
-                { name: 'John Doe', service: 'Cardiology' },
-                { name: 'Jane Smith', service: 'Pediatrics' },
-            ];
-            const filter = document.getElementById('search').value.toLowerCase();
-            const patientList = document.getElementById('patient-list');
-            patientList.innerHTML = '';
-            patients.filter(patient => patient.service.toLowerCase().includes(filter)).forEach(patient => {
-                const li = document.createElement('li');
-                li.textContent = patient.name + ' - ' + patient.service;
-                patientList.appendChild(li);
-            });
-        }
+        document.getElementById('home').classList.add('hidden');
+        document.getElementById('nav').classList.remove('hidden');
+        document.getElementById('app').classList.remove('hidden');
+        document.getElementById('user-bar').textContent = `Bonjour ${fullName} (${service})`;
+        document.getElementById('user-bar').classList.remove('hidden');
+    }
 
-        function submitEvaluation(event) {
-            event.preventDefault();
-            const patient = document.getElementById('patient').value;
-            const evaluation = document.getElementById('evaluation').value;
-            // Logic to submit the evaluation
-            alert('Evaluation for ' + patient + ' has been submitted.');
-            document.getElementById('evaluation-form').reset();
-        }
-    </script>
+    function showSection(sectionId) {
+        document.getElementById('patients-section').classList.add('hidden');
+        document.getElementById(sectionId + '-section').classList.remove('hidden');
+    }
+
+    function logout() {
+        localStorage.clear();
+        location.reload();
+    }
+</script>
 </body>
 </html>
