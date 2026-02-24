@@ -511,9 +511,13 @@ function hideNewDeviceForm() {
 }
 
 // =========== Sélecteurs dynamiques ==========
+function getFilteredPatients() {
+    if (currentUserEmail === 'zbawab@cmd.cd') return patients;
+    return patients.filter(p => p.service_patient === currentUserService);
+}
 function updatePatientList() {
     const list = document.getElementById('patient-list'); list.innerHTML = '';
-    patients.forEach(p => {
+    getFilteredPatients().forEach(p => {
         const li = document.createElement('li');
         li.textContent = `${p.name} ${p.firstname} - Âge: ${p.age} - Chambre: ${p.room}`;
         const meta = document.createElement('div');
@@ -523,6 +527,7 @@ function updatePatientList() {
     });
 }
 function updatePatientSelects() {
+    const filtered = getFilteredPatients();
     const selects = [
         document.getElementById('patient-select'),
         document.getElementById('device-patient'),
@@ -531,7 +536,7 @@ function updatePatientSelects() {
     selects.forEach(select => {
         if (select) {
             select.innerHTML = '<option value="">Sélectionner un patient...</option>';
-            patients.forEach(p => {
+            filtered.forEach(p => {
                 const option = document.createElement('option');
                 option.value = p.id; option.textContent = `${p.name} ${p.firstname}`;
                 select.appendChild(option);
