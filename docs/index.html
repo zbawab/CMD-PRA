@@ -1,24 +1,98 @@
-<html>
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-    <title>CareRisk Patient Risk Evaluation System</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareRisk Application</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
 </head>
 <body>
-    <h1>Welcome to CareRisk</h1>
-    <p>This application helps evaluate patient risk using multiple scales.</p>
-    <h2>Risk Evaluation Scales</h2>
-    <ul>
-        <li>Braden Scale</li>
-        <li>Morse Scale</li>
-        <li>Infection Risk Assessment</li>
-    </ul>
-    <h2>Firebase Integration</h2>
-    <p>Manage patient data securely with Firebase.</p>
-    <h2>Patient Management</h2>
-    <p>Track and manage patients effectively.</p>
-    <h2>Care Plans Generation</h2>
-    <p>Generate personalized care plans.</p>
-    <h2>Alert Dashboard</h2>
-    <p>Stay updated with alerts and notifications.</p>
+    <header style="background-color: blue;">
+        <h1>Application de Gestion des Risques</h1>
+    </header>
+    <main style="background: linear-gradient(to bottom, #ffffff, #f0f0f0);">
+        <h2>Connexion</h2>
+        <form id="loginForm">
+            <label for="fullName">Nom complet:</label>
+            <input type="text" id="fullName" name="fullName" required>
+            <label for="email">Email CMD:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="service">Service:</label>
+            <select id="service" name="service">
+                <option value="service1">Service 1</option>
+                <option value="service2">Service 2</option>
+            </select>
+            <button type="submit">Se connecter</button>
+        </form>
+        
+        <h2>Gestion des PATIENTS</h2>
+        <!-- Risk Sections -->
+        <div id="riskSections">
+            <h3>Échelle de Braden</h3>
+            <ul>
+                <li>Sensibilité: <input type="number" min="1" max="4"></li>
+                <li>Humidité: <input type="number" min="1" max="4"></li>
+                <li>Activité: <input type="number" min="1" max="4"></li>
+                <li>Mobilité: <input type="number" min="1" max="4"></li>
+                <li>Nutrition: <input type="number" min="1" max="4"></li>
+                <li>Friction: <input type="number" min="1" max="4"></li>
+            </ul>
+            <h3>Échelle de Morse</h3>
+            <ul>
+                <li>Antécédents: <input type="text"></li>
+                <li>Secondaire: <input type="text"></li>
+                <li>Aide: <input type="text"></li>
+                <li>IV: <input type="text"></li>
+                <li>Marche: <input type="text"></li>
+                <li>Mental: <input type="text"></li>
+            </ul>
+            <h3>Risque d'Infection</h3>
+            <ul>
+                <li>Âge: <input type="number"></li>
+                <li>Immunosuppression: <input type="checkbox"></li>
+                <li>Antibiotiques: <input type="text"></li>
+                <li>Chirurgie: <input type="text"></li>
+                <li>Comorbidités: <input type="text"></li>
+                <li>Dispositifs: <input type="text"></li>
+            </ul>
+        </div>
+        
+        <h2>Gestion des Dispositifs</h2>
+        <p>Calcul de criticité.</p>
+        <!-- Care Plan Management -->
+        <h2>Génération de Plan de Soins</h2>
+        <button id="generateCarePlan">Générer le Plan de Soins</button>
+        
+        <h2>Tableau de Bord des Alertes</h2>
+        <div id="alertDashboard">
+            <h3>Patients à haut risque</h3>
+            <ul></ul>
+        </div>
+    </main>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYO8pMl2nlBtoDnmD4qnwbJlnkvSNgc3U",
+            authDomain: "carerisk-d9fe7.firebaseapp.com",
+            projectId: "carerisk-d9fe7",
+            storageBucket: "carerisk-d9fe7.appspot.com",
+            messagingSenderId: "123456",
+            appId: "1:123456:web:123456"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // JavaScript functions for login, patient and device management here
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            // Login logic
+        });
+
+        document.getElementById('generateCarePlan').addEventListener('click', function() {
+            // Care plan generation logic
+        });
+    </script>
 </body>
 </html>
