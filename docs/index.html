@@ -43,6 +43,19 @@ button:hover { background-color:#218838;}
 .plan-actions-list { margin:0; padding-left:24px; color:#225268; font-size:1.01em;}
 .patient-meta { font-size:0.89em; color:#888; margin-top:2px; line-height:1.3;}
 @media (max-width:690px) { h1 { font-size:1.3em;} .container, .container.home { max-width:99vw; padding:9px 1vw;} #cmd-logo { width:60px; } }
+#page-layout { display:flex; flex-direction:row; align-items:flex-start; width:98%; max-width:1220px; gap:20px; margin:26px 0; }
+#page-layout > #app { flex:1; min-width:0; max-width:none; width:auto; margin:0; }
+#alert-dashboard { width:300px; min-width:260px; max-width:300px; background:#fff; border-radius:12px; box-shadow:0 4px 14px rgba(200,40,40,0.10); border:1.5px solid #f5c3c3; padding:16px 12px; position:sticky; top:20px; max-height:calc(100vh - 100px); overflow-y:auto; }
+#alert-dashboard h3 { color:#c0392b; font-size:1.15em; margin:0 0 12px 0; text-align:center; border-bottom:1px solid #f5c3c3; padding-bottom:8px; }
+.dash-section { margin-bottom:14px; border-radius:8px; padding:10px 8px; }
+.dash-section-title { font-weight:bold; font-size:0.97em; margin-bottom:7px; }
+.dash-high-risk { background:#fff8e6; border:1.5px solid #f5a623; }
+.dash-critical { background:#ffeaea; border:1.5px solid #e74c3c; }
+.dash-item { font-size:0.87em; margin-bottom:5px; padding:5px 7px; border-radius:5px; line-height:1.4; }
+.dash-item-hr { background:#f39c12; color:white; }
+.dash-item-crit { background:#e74c3c; color:white; }
+.dash-empty { color:#aaa; font-size:0.87em; font-style:italic; }
+@media (max-width:900px) { #page-layout { flex-direction:column; } #alert-dashboard { width:100%; max-width:100%; min-width:0; position:static; max-height:none; } }
 </style>
 <!-- === Firebase SDK : à placer ici, APRÈS <style> === -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -103,9 +116,9 @@ button:hover { background-color:#218838;}
     <button onclick="showSection('patients')">Liste des Patients</button>
     <button onclick="showSection('evaluation')">Évaluation</button>
     <button onclick="showSection('care-plans')">Plans de soins</button>
-    <button onclick="showSection('devices')">Dispositifs</button>
     <button id="admin-nav-btn" class="hidden" onclick="showSection('admin-controls')">Admin</button>
 </nav>
+<div id="page-layout">
 <div id="app" class="container hidden">
     <section id="patients-section">
     <h2>Liste des patients</h2>
@@ -273,15 +286,7 @@ button:hover { background-color:#218838;}
     </div>
     <button onclick="calculateRisks()">Calculer les risques</button>
     <button onclick="generateCarePlan()">Générer plan de soins</button>
-</section>
-<section id="care-plans-section" class="hidden">
-    <h2>Plans de soins générés</h2>
-    <div id="care-plan-output"></div>
-</section>
-<section id="devices-section" class="hidden">
-    <h2>Gestion des Dispositifs Invasifs</h2>
-    <button onclick="showNewDeviceForm()">Nouveau dispositif</button>
-    <form id="new-device-form" class="hidden" onsubmit="addDevice(); return false;">
+    <form id="new-device-form" class="hidden" onsubmit="addDevice(); return false;" style="margin-top:14px;">
         <label class="eval-critere" for="device-patient">Patient</label>
         <select id="device-patient"></select>
         <label class="eval-critere" for="device-type">Type de dispositif</label>
@@ -310,7 +315,10 @@ button:hover { background-color:#218838;}
         <button type="submit">Ajouter</button>
         <button type="button" class="annuler-btn" onclick="hideNewDeviceForm()">Annuler</button>
     </form>
-    <ul id="devices-full-list"></ul>
+</section>
+<section id="care-plans-section" class="hidden">
+    <h2>Plans de soins générés</h2>
+    <div id="care-plan-output"></div>
 </section>
 <section id="admin-controls" class="hidden">
     <h3>Contrôles Administrateur</h3>
@@ -321,6 +329,19 @@ button:hover { background-color:#218838;}
     <select id="admin-plan-select"></select>
     <button onclick="deleteCarePlan()">Supprimer plan de soins</button>
 </section>
+</div>
+<div id="alert-dashboard" class="hidden">
+    <h3>🚨 Alertes &amp; Risques</h3>
+    <div class="dash-section dash-high-risk">
+        <div class="dash-section-title">🔴 Patients à risque élevé</div>
+        <div id="dashboard-hr-list"><span class="dash-empty">Aucun risque élevé détecté</span></div>
+    </div>
+    <div class="dash-section dash-critical">
+        <div class="dash-section-title">🚨 Dispositifs critiques</div>
+        <div id="dashboard-crit-list"><span class="dash-empty">Aucun dispositif critique</span></div>
+    </div>
+</div>
+</div>
 <script>
 // ================== DÉBUT DU SCRIPT JS PRINCIPAL ==================
 
@@ -352,7 +373,8 @@ function addPatient() {
         diagnosis: document.getElementById('patient-diagnosis').value,
         service_patient: currentUserService,
         createdAt: formatDate(new Date()),
-        createdBy: currentUserFullName
+        createdBy: currentUserFullName,
+        service_patient: currentUserService
     };
     const newRef = db.ref('patients').push();
     patient.id = newRef.key;
@@ -375,6 +397,7 @@ function listenDevices() {
         snapshot.forEach(childSnap => { devices.push(childSnap.val()); });
         updateDevicesList();
         updateEvalDevices();
+        updateAlertsDashboard();
     });
 }
 function addDevice() {
@@ -403,6 +426,7 @@ function listenCarePlans() {
         snapshot.forEach(childSnap => { carePlans.push(childSnap.val()); });
         updateCarePlans();
         checkAndDeleteExpiredPlans();
+        updateAlertsDashboard();
     });
 }
 
@@ -419,18 +443,33 @@ function checkAndDeleteExpiredPlans() {
     const THRESHOLD_MS = (30 * 24 + 48) * 60 * 60 * 1000; // 30 jours + 48h en millisecondes
     const now = new Date();
     const deleted = [];
+    const deletedPlanIds = new Set();
+    const deletedPatientIds = new Set();
     carePlans.forEach(cp => {
         if (!cp.patient) return;
         const dateStr = cp.lastUpdate || cp.createdAt;
         const planDate = parsePlanDate(dateStr);
         if (planDate && (now - planDate) > THRESHOLD_MS) {
             deleted.push({ name: cp.patient.name + ' ' + cp.patient.firstname, createdAt: (cp.createdAt || '').split(' ')[0] });
+            deletedPlanIds.add(cp.id);
+            deletedPatientIds.add(cp.patient.id);
             db.ref('carePlans/' + cp.id).remove();
             console.log('Plan supprimé automatiquement (inactivité > 30j + 48h): ' + cp.patient.name + ' ' + cp.patient.firstname + ' (créé: ' + cp.createdAt + ')');
         }
     });
     if (deleted.length > 0) {
         _expiredPlansDeletionDone = true;
+        carePlans = carePlans.filter(cp => !deletedPlanIds.has(cp.id));
+        updateCarePlans();
+        const remainingPatientIds = new Set(carePlans.map(cp => cp.patient && cp.patient.id));
+        deletedPatientIds.forEach(pid => {
+            if (!remainingPatientIds.has(pid)) {
+                db.ref('patients/' + pid).remove();
+            }
+        });
+        patients = patients.filter(p => !(deletedPatientIds.has(p.id) && !remainingPatientIds.has(p.id)));
+        updatePatientList();
+        updatePatientSelects();
         if (currentUserEmail === 'zbawab@cmd.cd') {
             const lines = deleted.map(d => '- ' + d.name + ' (créé: ' + d.createdAt + ')').join('\n');
             alert('Plans supprimés automatiquement (inactivité > 30j + 48h):\n' + lines + '\n\nTotal: ' + deleted.length + ' plans supprimés');
@@ -469,6 +508,7 @@ function login() {
     document.getElementById('home').classList.add('hidden');
     document.getElementById('nav').classList.remove('hidden');
     document.getElementById('app').classList.remove('hidden');
+    document.getElementById('alert-dashboard').classList.remove('hidden');
     setUserBar();
     if (email === 'zbawab@cmd.cd') {
         document.getElementById('admin-controls').classList.remove('hidden');
@@ -489,7 +529,7 @@ function setUserBar() {
     document.getElementById('user-bar').classList.remove('hidden');
 }
 function showSection(section) {
-    let sections = ['patients-section','evaluation-section','care-plans-section','devices-section','admin-controls'];
+    let sections = ['patients-section','evaluation-section','care-plans-section','admin-controls'];
     sections.forEach(id => {
         let el = document.getElementById(id);
         if (el) el.classList.add('hidden');
@@ -537,7 +577,8 @@ function updatePatientSelects() {
     selects.forEach(({ el: select, list }) => {
         if (select) {
             select.innerHTML = '<option value="">Sélectionner un patient...</option>';
-            list.forEach(p => {
+
+            patients.filter(p => p.service_patient 
                 const option = document.createElement('option');
                 option.value = p.id; option.textContent = `${p.name} ${p.firstname}`;
                 select.appendChild(option);
@@ -689,7 +730,6 @@ function updateEvalDevices() {
 function addDeviceFromEval() {
     const pid = document.getElementById('patient-select').value;
     if (pid !== "") {
-        showSection('devices');
         showNewDeviceForm();
         document.getElementById('device-patient').value = pid;
     } else {
@@ -934,6 +974,46 @@ ${(cp.history && cp.history.length>0)?
     a.download = `plan_soins_${cp.patient.name}_${cp.patient.firstname}.txt`;
     a.click();
     URL.revokeObjectURL(url);
+}
+// ================== DASHBOARD ALERTES ==================
+function updateAlertsDashboard() {
+    const hrList = document.getElementById('dashboard-hr-list');
+    const critList = document.getElementById('dashboard-crit-list');
+    if (!hrList || !critList) return;
+
+    // Patients à risque élevé depuis les plans de soins (filtrés par service)
+    const highRiskPlans = carePlans.filter(cp => {
+        const r = cp.risques;
+        return r && cp.patient && cp.patient.service_patient === currentUserService
+            && (r.braden <= 12 || r.morse >= 51 || r.infection >= 7);
+    });
+    if (highRiskPlans.length === 0) {
+        hrList.innerHTML = '<span class="dash-empty">Aucun risque élevé détecté</span>';
+    } else {
+        hrList.innerHTML = highRiskPlans.map(cp => {
+            const r = cp.risques;
+            const reasons = [];
+            if (r.braden <= 12) reasons.push('Braden\u00a0: ' + r.braden);
+            if (r.morse >= 51) reasons.push('Morse\u00a0: ' + r.morse);
+            if (r.infection >= 7) reasons.push('Infection\u00a0: ' + r.infection);
+            return `<div class="dash-item dash-item-hr"><b>${cp.patient.name} ${cp.patient.firstname}</b><br>${reasons.join(', ')}<br><span style="font-size:0.85em;opacity:0.9;">${cp.patient.service_patient || ''}</span></div>`;
+        }).join('');
+    }
+
+    // Dispositifs critiques (filtrés par service)
+    const critDevicesWithPatient = devices.reduce((acc, d) => {
+        if (d.criticite !== 'critical') return acc;
+        const pat = patients.find(p => p.id === d.patientId);
+        if (pat && pat.service_patient === currentUserService) acc.push({d, pat});
+        return acc;
+    }, []);
+    if (critDevicesWithPatient.length === 0) {
+        critList.innerHTML = '<span class="dash-empty">Aucun dispositif critique</span>';
+    } else {
+        critList.innerHTML = critDevicesWithPatient.map(({d, pat}) => {
+            return `<div class="dash-item dash-item-crit"><b>${pat.name} ${pat.firstname}</b><br>${d.type}<br><span style="font-size:0.85em;opacity:0.9;">Inséré\u00a0: ${formatDate(d.insertion)}</span></div>`;
+        }).join('');
+    }
 }
 // ================== FIN DU SCRIPT ==================
 </script>
