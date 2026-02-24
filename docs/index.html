@@ -419,6 +419,77 @@ function deleteCarePlan() {
     if (selectedId === '' || !confirm("Confirmer la suppression du plan ?")) return;
     db.ref('carePlans/' + selectedId).remove();
 }
+// =================== NETTOYAGE AUTOMATIQUE DES PLANS EXPIRÉS ===================
+// Supprime automatiquement les plans de soins qui respectent les deux critères :
+// 1. Créé il y a plus de 30 jours
+// 2. Pas de mise à jour depuis plus de 48 heures
+function checkAndDeleteExpiredPlans() {
+    // Durées limites en millisecondes
+    const TRENTE_JOURS_MS = 30 * 24 * 60 * 60 * 1000;
+    const QUARANTE_HUIT_H_MS = 48 * 60 * 60 * 1000;
+
+    // Convertit le format de date stocké (dd/mm/yyyy hh:mm) en objet Date
+    function parseDatePlan(str) {
+        if (!str) return null;
+        const parties = str.split(' ');
+        const dateParties = parties[0].split('/');
+        if (dateParties.length < 3) return null;
+        const heureParties = parties.length > 1 ? parties[1].split(':') : ['0', '0'];
+        return new Date(
+            parseInt(dateParties[2]),
+            parseInt(dateParties[1]) - 1,
+            parseInt(dateParties[0]),
+            parseInt(heureParties[0] || 0),
+            parseInt(heureParties[1] || 0)
+        );
+    }
+
+    // Lecture unique de tous les plans de soins depuis Firebase
+    db.ref('carePlans').once('value', function(snapshot) {
+        const maintenant = new Date();
+        const suppressions = [];
+
+        snapshot.forEach(function(childSnap) {
+            const plan = childSnap.val();
+            const id = childSnap.key;
+
+            // Récupération et conversion des dates (gestion des cas limites : dates manquantes)
+            const dateCreation = parseDatePlan(plan.createdAt);
+            const dateMaj = parseDatePlan(plan.lastUpdate);
+
+            if (!dateCreation || !dateMaj) {
+                console.log('[CareRisk] Plan ignoré (dates manquantes) :', id);
+                return;
+            }
+
+            const ancienneteMs = maintenant - dateCreation;
+            const inactiviteMs = maintenant - dateMaj;
+
+            // Application des deux critères d'expiration (30j ET 48h)
+            if (ancienneteMs > TRENTE_JOURS_MS && inactiviteMs > QUARANTE_HUIT_H_MS) {
+                suppressions.push({ id: id, plan: plan });
+            }
+        });
+
+        // Suppression des plans expirés de Firebase et journalisation
+        if (suppressions.length === 0) return;
+        const promessesSuppressions = suppressions.map(function(item) {
+            return db.ref('carePlans/' + item.id).remove().then(function() {
+                console.log('[CareRisk] Plan de soins expiré supprimé :', item.id,
+                    '| Patient :', item.plan.patient ? item.plan.patient.name : 'Inconnu',
+                    '| Créé le :', item.plan.createdAt,
+                    '| Dernière MAJ :', item.plan.lastUpdate);
+            }).catch(function(erreur) {
+                console.error('[CareRisk] Échec de la suppression du plan :', item.id, erreur);
+            });
+        });
+
+        // Notification à l'utilisateur uniquement après confirmation de toutes les suppressions
+        Promise.all(promessesSuppressions).then(function() {
+            alert(suppressions.length + ' plan(s) de soins expiré(s) ont été supprimés automatiquement (inactifs depuis plus de 48h et créés il y a plus de 30 jours).');
+        });
+    });
+}
 // =================== UI & NAVIGATION ========================
 function goHome() { location.reload(); }
 function login() {
@@ -439,6 +510,8 @@ function login() {
     listenPatients();
     listenDevices();
     listenCarePlans();
+    // Vérification et suppression automatique des plans de soins expirés (différée pour ne pas bloquer l'affichage)
+    setTimeout(checkAndDeleteExpiredPlans, 0);
     showSection('patients');
 }
 function setUserBar() {
