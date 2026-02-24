@@ -1,12 +1,88 @@
-function deleteExpiredCarePlans(carePlans) {
-    const now = new Date(2026, 1, 24, 12, 24, 18); // Specified date
-    const thirtyDaysAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
-    const fortyEightHoursAgo = new Date(now - 48 * 60 * 60 * 1000);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMD-PRA</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <header>
+        <h1>CMD-PRA</h1>
+        <nav>
+            <ul>
+                <li><a href="#patients">Patients</a></li>
+                <li><a href="#evaluation">Evaluation</a></li>
+                <li><a href="#care-plans">Care Plans</a></li>
+                <li><a href="#devices">Devices</a></li>
+                <li><a href="#admin-controls">Admin Controls</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    return carePlans.filter(plan => {
-        return plan.date < thirtyDaysAgo && plan.lastUpdated < fortyEightHoursAgo;
-    });
+    <section id="patients">
+        <h2>Patients</h2>
+        <div id="patient-list"></div>
+    </section>
+
+    <section id="evaluation">
+        <h2>Evaluation</h2>
+        <div id="evaluation-form">
+            <label for="patient-id">Patient ID:</label>
+            <input type="text" id="patient-id" name="patient-id">
+            <button onclick="evaluatePatient()">Evaluate</button>
+        </div>
+    </section>
+
+    <section id="care-plans">
+        <h2>Care Plans</h2>
+        <div id="care-plan-list"></div>
+        <button onclick="createCarePlan()">Create Care Plan</button>
+    </section>
+
+    <section id="devices">
+        <h2>Devices</h2>
+        <div id="device-list"></div>
+        <button onclick="addDevice()">Add Device</button>
+    </section>
+
+    <section id="admin-controls">
+        <h2>Admin Controls</h2>
+        <button onclick="viewLogs()">View Logs</button>
+        <button onclick="manageUsers()">Manage Users</button>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 CMD-PRA</p>
+    </footer>
+</body>
+</html>
+
+<script>
+function evaluatePatient() {
+    const patientId = document.getElementById('patient-id').value;
+    // Logic to evaluate patient
+    console.log(`Evaluating patient: ${patientId}`);
 }
 
-// Usage example:
-// const activePlans = deleteExpiredCarePlans(allCarePlans);
+function createCarePlan() {
+    // Logic to create a care plan
+    console.log('Creating care plan...');
+}
+
+function addDevice() {
+    // Logic to add a device
+    console.log('Adding device...');
+}
+
+function viewLogs() {
+    // Logic to view logs
+    console.log('Viewing logs...');
+}
+
+function manageUsers() {
+    // Logic to manage users
+    console.log('Managing users...');
+}
+</script>
