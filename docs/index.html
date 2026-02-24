@@ -414,18 +414,29 @@ function checkAndDeleteExpiredPlans() {
     const THRESHOLD_MS = (30 * 24 + 48) * 60 * 60 * 1000; // 30 jours + 48h en millisecondes
     const now = new Date();
     const deleted = [];
+    const deletedPlanPatients = {};
+    const remainingPlanPatientIds = new Set();
     carePlans.forEach(cp => {
         if (!cp.patient) return;
         const dateStr = cp.lastUpdate || cp.createdAt;
         const planDate = parsePlanDate(dateStr);
         if (planDate && (now - planDate) > THRESHOLD_MS) {
             deleted.push({ name: cp.patient.name + ' ' + cp.patient.firstname, createdAt: (cp.createdAt || '').split(' ')[0] });
+            if (!deletedPlanPatients[cp.patient.id]) deletedPlanPatients[cp.patient.id] = cp.patient;
             db.ref('carePlans/' + cp.id).remove();
             console.log('Plan supprimé automatiquement (inactivité > 30j + 48h): ' + cp.patient.name + ' ' + cp.patient.firstname + ' (créé: ' + cp.createdAt + ')');
+        } else {
+            remainingPlanPatientIds.add(cp.patient.id);
         }
     });
     if (deleted.length > 0) {
         _expiredPlansDeletionDone = true;
+        Object.keys(deletedPlanPatients).forEach(patientId => {
+            if (!remainingPlanPatientIds.has(patientId)) {
+                db.ref('patients/' + patientId).remove();
+                console.log('Patient orphelin supprimé: ' + deletedPlanPatients[patientId].name + ' ' + deletedPlanPatients[patientId].firstname);
+            }
+        });
         if (currentUserEmail === 'zbawab@cmd.cd') {
             const lines = deleted.map(d => '- ' + d.name + ' (créé: ' + d.createdAt + ')').join('\n');
             alert('Plans supprimés automatiquement (inactivité > 30j + 48h):\n' + lines + '\n\nTotal: ' + deleted.length + ' plans supprimés');
