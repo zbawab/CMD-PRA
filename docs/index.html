@@ -1,58 +1,38 @@
-<!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
     <title>CareRisk Application</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="app.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Application de CareRisk</h1>
-    </header>
-    <nav>
-        <ul>
-            <li><a href="#patient-management">Gestion des patients</a></li>
-            <li><a href="#device-management">Gestion des dispositifs</a></li>
-            <li><a href="#care-plan">Génération de plan de soins</a></li>
-            <li><a href="#alert-dashboard">Tableau de bord des alertes</a></li>
-            <li><a href="#risk-assessment">Évaluation des risques</a></li>
-        </ul>
-    </nav>
-    <main>
-        <section id="patient-management">
-            <h2>Gestion des patients</h2>
-            <p>Fonctionnalités de gestion des patients...</p>
-        </section>
-        <section id="device-management">
-            <h2>Gestion des dispositifs</h2>
-            <p>Fonctionnalités de gestion des dispositifs...</p>
-        </section>
-        <section id="care-plan">
-            <h2>Génération de plan de soins</h2>
-            <p>Génération de plans de soins pour les patients...</p>
-        </section>
-        <section id="alert-dashboard">
-            <h2>Tableau de bord des alertes</h2>
-            <p>Surveillance des alertes et notifications...</p>
-        </section>
-        <section id="risk-assessment">
-            <h2>Évaluation des risques</h2>
-            <h3>Échelle de Braden</h3>
-            <p>Évaluation des risques d'escarres...</p>
-            <h3>Échelle de Morse</h3>
-            <p>Évaluation des risques de chutes...</p>
-            <h3>Évaluation des infections</h3>
-            <p>Évaluation des risques d'infection...</p>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2026 CareRisk. Tous droits réservés.</p>
-    </footer>
-    <script src="app.js"></script>
+    <div class="login-form">
+        <h2>Login</h2>
+        <form>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username"><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password"><br>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+    <div class="assessment-tools">
+        <h2>Assessments</h2>
+        <h3>Braden Scale</h3>
+        <h3>Morse Scale</h3>
+        <h3>Infection Risk Assessment</h3>
+    </div>
+    <div class="patient-management">
+        <h2>Patient Management</h2>
+    </div>
+    <div class="device-management">
+        <h2>Device Management</h2>
+    </div>
+    <div class="care-plans">
+        <h2>Care Plans Generation</h2>
+    </div>
+    <div class="alert-dashboard">
+        <h2>Alert Dashboard</h2>
+        <!-- CSS colors and styling apply here -->
+    </div>
 </body>
 </html>
