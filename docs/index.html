@@ -414,18 +414,33 @@ function checkAndDeleteExpiredPlans() {
     const THRESHOLD_MS = (30 * 24 + 48) * 60 * 60 * 1000; // 30 jours + 48h en millisecondes
     const now = new Date();
     const deleted = [];
+    const deletedPlanIds = new Set();
+    const deletedPatientIds = new Set();
     carePlans.forEach(cp => {
         if (!cp.patient) return;
         const dateStr = cp.lastUpdate || cp.createdAt;
         const planDate = parsePlanDate(dateStr);
         if (planDate && (now - planDate) > THRESHOLD_MS) {
             deleted.push({ name: cp.patient.name + ' ' + cp.patient.firstname, createdAt: (cp.createdAt || '').split(' ')[0] });
+            deletedPlanIds.add(cp.id);
+            deletedPatientIds.add(cp.patient.id);
             db.ref('carePlans/' + cp.id).remove();
             console.log('Plan supprimé automatiquement (inactivité > 30j + 48h): ' + cp.patient.name + ' ' + cp.patient.firstname + ' (créé: ' + cp.createdAt + ')');
         }
     });
     if (deleted.length > 0) {
         _expiredPlansDeletionDone = true;
+        carePlans = carePlans.filter(cp => !deletedPlanIds.has(cp.id));
+        updateCarePlans();
+        const remainingPatientIds = new Set(carePlans.map(cp => cp.patient && cp.patient.id));
+        deletedPatientIds.forEach(pid => {
+            if (!remainingPatientIds.has(pid)) {
+                db.ref('patients/' + pid).remove();
+            }
+        });
+        patients = patients.filter(p => !(deletedPatientIds.has(p.id) && !remainingPatientIds.has(p.id)));
+        updatePatientList();
+        updatePatientSelects();
         if (currentUserEmail === 'zbawab@cmd.cd') {
             const lines = deleted.map(d => '- ' + d.name + ' (créé: ' + d.createdAt + ')').join('\n');
             alert('Plans supprimés automatiquement (inactivité > 30j + 48h):\n' + lines + '\n\nTotal: ' + deleted.length + ' plans supprimés');
