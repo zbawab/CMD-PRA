@@ -1,201 +1,32 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CareRisk - Évaluation des Risques Patients</title>
-<style>
-body { font-family: Arial,sans-serif; margin:0; padding:0; background:linear-gradient(132deg,#e7ebf5,#d6f1fb 60%,#e9d9f6 100%); min-height:100vh; color:#333; display:flex; flex-direction:column; align-items:center;}
-header { background:#0056b3; color:white; width:100%; text-align:center; padding-top:10px; padding-bottom:7px; display:flex; flex-direction:column; align-items:center; box-shadow:0 4px 8px rgba(70,90,120,0.06); cursor:pointer;}
-#cmd-logo { width:90px; margin-bottom:6px; margin-top:6px;}
-#user-bar {margin-bottom: 12px; color:#0056b3; font-size:1.1em; font-weight:600; text-align:center;}
-h1 { margin:0 0 8px 0; font-size:2.1em; font-weight:bold; letter-spacing:0.5px;}
-nav { background-color:#007bff; width:100%; padding:10px 0 10px 0; text-align:center;}
-nav button { margin:6px 7px; padding:10px 15px; background-color:#fff; border:none; border-radius:5px; cursor:pointer; font-weight:bold; color:#0056b3; transition:0.2s;}
-nav button:hover { background-color:#d6f1fb; color:#0056b3;}
-.container { max-width:900px; width:98%; padding:22px 20px; background-color:white; box-shadow:0 4px 14px rgba(40,70,100,0.09); margin:26px 0 26px 0; border-radius:12px;}
-.container.home { background:linear-gradient(120deg,#cedbfa 55%,#e6faed 100%); box-shadow:0 4px 40px rgba(70,90,120,0.07); margin-top:28px; margin-bottom:18px;}
-.welcome-title { color:#3840b9; font-weight:bold; font-size:2em; margin:0 0 .6em 0;}
-.welcome2 { color:#197c80; font-size:1.06em; margin-bottom:.7em; max-width:760px; text-align:justify;}
-form { display:flex; flex-direction:column;}
-label.eval-critere { margin-bottom:6px; margin-top:12px; font-weight:bold;}
-input, select, button, textarea { margin:4px 0 14px 0; padding:10px; font-size:16px; border-radius:5px; border:1px solid #ccc;}
-textarea { resize:vertical;}
-button { background-color:#28a745; color:white; cursor:pointer; transition:0.2s;}
-button[type="button"]:not([onclick]), button.annuler-btn { background-color:#aaa;}
-button:hover { background-color:#218838;}
-.hidden { display:none;}
-section { display:none; }
-section.active { display:block; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header>
-    <img id="cmd-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23fff'/%3E%3Ctext x='50' y='60' text-anchor='middle' font-size='40' fill='%230056b3' font-weight='bold'%3ECMD%3C/text%3E%3C/svg%3E" alt="CMD Logo">
-    <h1>CareRisk - Évaluation des Risques Patients</h1>
-    <div id="user-bar" class="hidden"></div>
-</header>
-<div id="home" class="container home">
-    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
-        <div class="welcome-title">Bienvenue sur <span style="color:#197c80;">CareRisk</span>&nbsp;!</div>
-        <div class="welcome2">
-            L'outil <b>CareRisk</b> aide les équipes infirmières à évaluer et suivre les risques patients selon les standards internationaux. C'est une application d'aide à la décision qui intègre les données des patients hospitalisés pour calculer un score de risque précis et puis générer des plans de soins personnalisés spécifiques à chaque risque identifié. L'outil assure une prévention ciblée et un suivi rigoureux des protocoles pour garantir la sécurité et l'optimisation des soins.
-        </div>
-    </div>
-    <ul style="font-size:1.18em;margin:0 0 16px 0;padding:0 0 0 22px;list-style: disc;">
-        <li>Connexion rapide avec votre compte personnel CMD</li>
-        <li>Gestion des <span style="color:#2a7a32;">patients</span>, <span style="color:#197c80;">dispositifs</span> et <span style="color:#d35400;">risques</span></li>
-        <li>Plans de soins générés automatiquement selon les scores</li>
-    </ul>
-    <form id="login-form" onsubmit="login(event); return false;" style="margin-top:15px;max-width:330px;">
-        <label for="full-name" style="font-weight:bold;">Nom complet</label>
-        <input type="text" id="full-name" required placeholder="Votre nom complet">
-        <label for="email" style="font-weight:bold;">Compte mail CMD</label>
-        <input type="email" id="email" required placeholder="prenom.nom@cmd.cd">
-        <label for="service" style="font-weight:bold;">Service</label>
-        <select id="service" required>
-            <option>-- Sélectionnez le service --</option>
-            <option>Médecine</option>
-            <option>Chirurgie</option>
-            <option>Maternité</option>
-            <option>Pédiatrie</option>
-            <option>Soins Intensifs</option>
-            <option>Néonatologie</option>
-        </select>
-        <button type="submit" style="margin-top: 0.5em;">Se connecter</button>
-    </form>
-    <div style="margin-top:15px;font-size:0.98em;color:#108;">Contact administrateur : zbawab@cmd.cd</div>
-</div>
-<nav id="nav" class="hidden">
-    <button onclick="showSection('patients')">Liste des Patients</button>
-    <button onclick="showSection('evaluation')">Évaluation</button>
-    <button onclick="showSection('care-plans')">Plans de soins</button>
-    <button id="admin-nav-btn" class="hidden" onclick="showSection('admin-controls')">Admin</button>
-</nav>
-<div id="page-layout">
-<div id="app" class="container hidden">
-    <section id="patients-section">
-        <h2>Liste des Patients</h2>
-        <input type="text" id="patient-filter" placeholder="Filtrer par service" onkeyup="loadPatients()">
-        <select id="patient-select" size="10" style="width:100%; margin:10px 0;"></select>
-    </section>
-    <section id="evaluation-section">
-        <h2>Évaluation des Risques</h2>
-        <form id="eval-form" onsubmit="submitEvaluation(event); return false;">
-            <label>Patient sélectionné: <span id="selected-patient">Aucun</span></label>
-            <label class="eval-critere">Chute</label>
-            <input type="number" id="eval-chute" min="0" max="10">
-            <label class="eval-critere">Escarre</label>
-            <input type="number" id="eval-escarre" min="0" max="10">
-            <label class="eval-critere">Infection</label>
-            <input type="number" id="eval-infection" min="0" max="10">
-            <button type="submit">Soumettre Évaluation</button>
-        </form>
-    </section>
-    <section id="care-plans-section">
-        <h2>Plans de soins</h2>
-        <p>Gestion des plans de soins personnalisés selon les risques identifiés.</p>
-        <div id="care-plans-list"></div>
-    </section>
-    <section id="admin-controls">
-        <h2>Contrôles Administrateur</h2>
-        <button onclick="logout()">Déconnexion</button>
-    </section>
-</div>
-</div>
-
-<script>
-    let patients = [
-        {name: 'Jean Dupont', service: 'Médecine', id: 1},
-        {name: 'Marie Martin', service: 'Chirurgie', id: 2},
-        {name: 'Paul Bernard', service: 'Pédiatrie', id: 3},
-        {name: 'Sophie Lefevre', service: 'Soins Intensifs', id: 4},
-        {name: 'Antoine Moreau', service: 'Maternité', id: 5}
-    ];
-    let currentUser = null;
-    let currentPatient = null;
-
-    function login(event) {
-        event.preventDefault();
-        const fullName = document.getElementById('full-name').value;
-        const email = document.getElementById('email').value;
-        const service = document.getElementById('service').value;
-
-        if (!fullName || !email || service === '-- Sélectionnez le service --') {
-            alert('Veuillez remplir tous les champs');
-            return;
-        }
-
-        currentUser = {name: fullName, email: email, service: service};
-        localStorage.setItem('user_name', fullName);
-        localStorage.setItem('user_email', email);
-        localStorage.setItem('user_service', service);
-
-        document.getElementById('home').classList.add('hidden');
-        document.getElementById('nav').classList.remove('hidden');
-        document.getElementById('app').classList.remove('hidden');
-        document.getElementById('user-bar').textContent = `Bonjour ${fullName} (${service})`;
-        document.getElementById('user-bar').classList.remove('hidden');
-
-        loadPatients();
-        showSection('patients');
-    }
-
-    function loadPatients() {
-        const filter = document.getElementById('patient-filter').value.toLowerCase();
-        const select = document.getElementById('patient-select');
-        select.innerHTML = '<option value="">Sélectionner un patient...</option>';
-        
-        patients.forEach(p => {
-            if (p.service.toLowerCase().includes(filter)) {
-                const option = document.createElement('option');
-                option.value = p.id;
-                option.textContent = p.name + ' - ' + p.service;
-                select.appendChild(option);
-            }
-        });
-        
-        select.onchange = function() {
-            if (this.value) {
-                currentPatient = patients.find(p => p.id == this.value);
-                document.getElementById('selected-patient').textContent = currentPatient.name;
-            }
-        };
-    }
-
-    function showSection(sectionId) {
-        document.querySelectorAll('#app section').forEach(s => s.style.display = 'none');
-        document.getElementById(sectionId + '-section').style.display = 'block';
-    }
-
-    function submitEvaluation(event) {
-        event.preventDefault();
-        if (!currentPatient) {
-            alert('Veuillez sélectionner un patient');
-            return;
-        }
-        alert('Évaluation pour ' + currentPatient.name + ' soumise avec succès!');
-        document.getElementById('eval-form').reset();
-    }
-
-    function logout() {
-        localStorage.clear();
-        location.reload();
-    }
-
-    window.addEventListener('load', function() {
-        const userName = localStorage.getItem('user_name');
-        if (userName) {
-            const userService = localStorage.getItem('user_service');
-            currentUser = {name: userName, service: userService};
-            document.getElementById('home').classList.add('hidden');
-            document.getElementById('nav').classList.remove('hidden');
-            document.getElementById('app').classList.remove('hidden');
-            document.getElementById('user-bar').textContent = `Bonjour ${userName} (${userService})`;
-            document.getElementById('user-bar').classList.remove('hidden');
-            loadPatients();
-        }
-    });
-</script>
+    <header>
+        <h1>Welcome to the Dashboard</h1>
+        <img src="logo.png" alt="Company Logo">
+    </header>
+    <main>
+        <section id="features">
+            <h2>Features</h2>
+            <p>This dashboard offers various features including...</p>
+        </section>
+        <section id="evaluationForms">
+            <h2>Evaluation Forms</h2>
+            <form>
+                <label for="feedback">Your Feedback:</label>
+                <textarea id="feedback" name="feedback"></textarea>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2026 Company Name</p>
+    </footer>
 </body>
 </html>
