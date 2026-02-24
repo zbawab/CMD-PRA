@@ -414,18 +414,23 @@ function checkAndDeleteExpiredPlans() {
     const THRESHOLD_MS = (30 * 24 + 48) * 60 * 60 * 1000; // 30 jours + 48h en millisecondes
     const now = new Date();
     const deleted = [];
+    const deletedIds = [];
     carePlans.forEach(cp => {
         if (!cp.patient) return;
         const dateStr = cp.lastUpdate || cp.createdAt;
         const planDate = parsePlanDate(dateStr);
         if (planDate && (now - planDate) > THRESHOLD_MS) {
             deleted.push({ name: cp.patient.name + ' ' + cp.patient.firstname, createdAt: (cp.createdAt || '').split(' ')[0] });
+            deletedIds.push(cp.id);
             db.ref('carePlans/' + cp.id).remove();
             console.log('Plan supprimé automatiquement (inactivité > 30j + 48h): ' + cp.patient.name + ' ' + cp.patient.firstname + ' (créé: ' + cp.createdAt + ')');
         }
     });
     if (deleted.length > 0) {
         _expiredPlansDeletionDone = true;
+        const deletedIdsSet = new Set(deletedIds);
+        carePlans = carePlans.filter(cp => !deletedIdsSet.has(cp.id));
+        updateCarePlans();
         if (currentUserEmail === 'zbawab@cmd.cd') {
             const lines = deleted.map(d => '- ' + d.name + ' (créé: ' + d.createdAt + ')').join('\n');
             alert('Plans supprimés automatiquement (inactivité > 30j + 48h):\n' + lines + '\n\nTotal: ' + deleted.length + ' plans supprimés');
@@ -451,6 +456,8 @@ function deleteCarePlan() {
     const selectedId = document.getElementById('admin-plan-select').value;
     if (selectedId === '' || !confirm("Confirmer la suppression du plan ?")) return;
     db.ref('carePlans/' + selectedId).remove();
+    carePlans = carePlans.filter(cp => cp.id !== selectedId);
+    updateCarePlans();
 }
 // =================== UI & NAVIGATION ========================
 function goHome() { location.reload(); }
