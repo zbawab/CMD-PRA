@@ -3,65 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CareRisk Application</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
-    <script>
-        // Firebase configuration
-        var firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-    </script>
+    <title>CareRisk Application</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 </head>
 <body>
     <header>
-        <h1>Application CareRisk</h1>
+        <h1>Application de CareRisk</h1>
     </header>
+    <nav>
+        <ul>
+            <li><a href="#patient-management">Gestion des patients</a></li>
+            <li><a href="#device-management">Gestion des dispositifs</a></li>
+            <li><a href="#care-plan">Génération de plan de soins</a></li>
+            <li><a href="#alert-dashboard">Tableau de bord des alertes</a></li>
+            <li><a href="#risk-assessment">Évaluation des risques</a></li>
+        </ul>
+    </nav>
     <main>
-        <section id="login">
-            <h2>Connexion</h2>
-            <form id="loginForm">
-                <input type="email" placeholder="Email" required>
-                <input type="password" placeholder="Mot de passe" required>
-                <button type="submit">Se connecter</button>
-            </form>
+        <section id="patient-management">
+            <h2>Gestion des patients</h2>
+            <p>Fonctionnalités de gestion des patients...</p>
         </section>
-        <section id="dashboard">
-            <h2>Tableau de bord</h2>
-            <div id="alertDashboard"></div>
-            <div id="riskEvaluation">
-                <h3>Évaluation des risques</h3>
-                <button id="bradenScale">Braden Scale</button>
-                <button id="morseScale">Morse Scale</button>
-                <button id="infectionRisk">Infection Risk Evaluation</button>
-            </div>
+        <section id="device-management">
+            <h2>Gestion des dispositifs</h2>
+            <p>Fonctionnalités de gestion des dispositifs...</p>
+        </section>
+        <section id="care-plan">
+            <h2>Génération de plan de soins</h2>
+            <p>Génération de plans de soins pour les patients...</p>
+        </section>
+        <section id="alert-dashboard">
+            <h2>Tableau de bord des alertes</h2>
+            <p>Surveillance des alertes et notifications...</p>
+        </section>
+        <section id="risk-assessment">
+            <h2>Évaluation des risques</h2>
+            <h3>Échelle de Braden</h3>
+            <p>Évaluation des risques d'escarres...</p>
+            <h3>Échelle de Morse</h3>
+            <p>Évaluation des risques de chutes...</p>
+            <h3>Évaluation des infections</h3>
+            <p>Évaluation des risques d'infection...</p>
         </section>
     </main>
-    <script>
-        // Implementation for login, patient management, care plan generation
-        document.getElementById('loginForm').onsubmit = function(event) {
-            event.preventDefault();
-            // Handle login process
-        };
-
-        document.getElementById('bradenScale').onclick = function() {
-            // Braden scale evaluation logic
-        };
-        document.getElementById('morseScale').onclick = function() {
-            // Morse scale evaluation logic
-        };
-        document.getElementById('infectionRisk').onclick = function() {
-            // Infection risk evaluation logic
-        };
-    </script>
+    <footer>
+        <p>&copy; 2026 CareRisk. Tous droits réservés.</p>
+    </footer>
+    <script src="app.js"></script>
 </body>
 </html>
