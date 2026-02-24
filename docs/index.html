@@ -1,12 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index</title>
+    <title>CareRisk Application</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+    <script>
+        // Firebase configuration
+        var firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
 </head>
 <body>
-    <h1>Welcome to CMD-PRA Documentation</h1>
-    <p>This is the index page for CMD-PRA.</p>
+    <header>
+        <h1>Application CareRisk</h1>
+    </header>
+    <main>
+        <section id="login">
+            <h2>Connexion</h2>
+            <form id="loginForm">
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Mot de passe" required>
+                <button type="submit">Se connecter</button>
+            </form>
+        </section>
+        <section id="dashboard">
+            <h2>Tableau de bord</h2>
+            <div id="alertDashboard"></div>
+            <div id="riskEvaluation">
+                <h3>Évaluation des risques</h3>
+                <button id="bradenScale">Braden Scale</button>
+                <button id="morseScale">Morse Scale</button>
+                <button id="infectionRisk">Infection Risk Evaluation</button>
+            </div>
+        </section>
+    </main>
+    <script>
+        // Implementation for login, patient management, care plan generation
+        document.getElementById('loginForm').onsubmit = function(event) {
+            event.preventDefault();
+            // Handle login process
+        };
+
+        document.getElementById('bradenScale').onclick = function() {
+            // Braden scale evaluation logic
+        };
+        document.getElementById('morseScale').onclick = function() {
+            // Morse scale evaluation logic
+        };
+        document.getElementById('infectionRisk').onclick = function() {
+            // Infection risk evaluation logic
+        };
+    </script>
 </body>
 </html>
