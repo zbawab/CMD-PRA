@@ -340,12 +340,17 @@ function listenPatients() {
     });
 }
 function addPatient() {
+    if (!currentUserService || currentUserService === '-- Sélectionnez le service --') {
+        alert("Erreur : aucun service sélectionné. Veuillez vous reconnecter.");
+        return;
+    }
     const patient = {
         name: document.getElementById('patient-name').value,
         firstname: document.getElementById('patient-firstname').value,
         age: document.getElementById('patient-age').value,
         room: document.getElementById('patient-room').value,
         diagnosis: document.getElementById('patient-diagnosis').value,
+        service_patient: currentUserService,
         createdAt: formatDate(new Date()),
         createdBy: currentUserFullName
     };
@@ -513,7 +518,7 @@ function hideNewDeviceForm() {
 // =========== Sélecteurs dynamiques ==========
 function updatePatientList() {
     const list = document.getElementById('patient-list'); list.innerHTML = '';
-    patients.forEach(p => {
+    patients.filter(p => p.service_patient === currentUserService).forEach(p => {
         const li = document.createElement('li');
         li.textContent = `${p.name} ${p.firstname} - Âge: ${p.age} - Chambre: ${p.room}`;
         const meta = document.createElement('div');
@@ -523,15 +528,16 @@ function updatePatientList() {
     });
 }
 function updatePatientSelects() {
+    const servicePatients = patients.filter(p => p.service_patient === currentUserService);
     const selects = [
-        document.getElementById('patient-select'),
-        document.getElementById('device-patient'),
-        document.getElementById('admin-patient-select')
+        { el: document.getElementById('patient-select'), list: servicePatients },
+        { el: document.getElementById('device-patient'), list: servicePatients },
+        { el: document.getElementById('admin-patient-select'), list: patients }
     ];
-    selects.forEach(select => {
+    selects.forEach(({ el: select, list }) => {
         if (select) {
             select.innerHTML = '<option value="">Sélectionner un patient...</option>';
-            patients.forEach(p => {
+            list.forEach(p => {
                 const option = document.createElement('option');
                 option.value = p.id; option.textContent = `${p.name} ${p.firstname}`;
                 select.appendChild(option);
@@ -835,7 +841,7 @@ function updateCarePlans() {
     output.innerHTML = '';
     // Groupe les plans par patient
     const patientsWithPlans = {};
-    carePlans.forEach(cp => {
+    carePlans.filter(cp => cp.patient && cp.patient.service_patient === currentUserService).forEach(cp => {
         if(!patientsWithPlans[cp.patient.id]) patientsWithPlans[cp.patient.id] = [];
         patientsWithPlans[cp.patient.id].push(cp);
     });
