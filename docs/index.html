@@ -110,7 +110,7 @@ button:hover { background-color:#218838;}
         </select>
         <button type="submit" style="margin-top: 0.5em;">Se connecter</button>
     </form>
-    <div style="margin-top:15px;font-size:0.98em;color:#108;">Contact administrateur : zbawab@cmd.cd</div>
+    <div style="margin-top:15px;font-size:0.98em;color:#108;">Contact administrateur : zbawab@cmd.cd</div>
 </div>
 <nav id="nav" class="hidden">
     <button onclick="showSection('patients')">Liste des Patients</button>
@@ -524,7 +524,7 @@ function setUserBar() {
     if(currentUserFullName)
         txt = 'Connecté : <span style="color:#197c80;font-weight:bold;">'+currentUserFullName+'</span>';
     if(currentUserService && currentUserService!=="-- Sélectionnez le service --")
-        txt += ' — Service : <span style="color:#d35400;">'+currentUserService+'</span>';
+        txt += ' — Service : <span style="color:#d35400;">'+currentUserService+'</span>';
     document.getElementById('user-bar').innerHTML = txt;
     document.getElementById('user-bar').classList.remove('hidden');
 }
