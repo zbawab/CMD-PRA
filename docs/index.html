@@ -3,58 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CareRisk Application</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
-    <script>
-        // TODO: Replace with your web app's Firebase configuration
-        var firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            databaseURL: "YOUR_DATABASE_URL",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-    </script>
+    <title>CareRisk Application</title>
 </head>
 <body>
     <header>
         <h1>CareRisk Application</h1>
+        <nav>
+            <ul>
+                <li><a href="#patient-management">Patient Management</a></li>
+                <li><a href="#risk-evaluations">Risk Evaluations</a></li>
+                <li><a href="#care-plan">Care Plan</a></li>
+                <li><a href="#device-management">Device Management</a></li>
+                <li><a href="#alerts-dashboard">Alerts Dashboard</a></li>
+            </ul>
+        </nav>
     </header>
     <main>
         <section id="patient-management">
             <h2>Patient Management</h2>
-            <div id="patient-list"></div>
+            <p>Manage patient records and information.</p>
+            <!-- Patient management functionalities go here -->
         </section>
-        <section id="risk-evaluation">
+        <section id="risk-evaluations">
             <h2>Risk Evaluations</h2>
-            <div id="braden-scale"></div>
-            <div id="morse-scale"></div>
-            <div id="infection-scale"></div>
+            <p>Conduct risk evaluations using various models.</p>
+            <div>
+                <h3>Braden Scale</h3>
+                <!-- Braden scale implementation goes here -->
+            </div>
+            <div>
+                <h3>Morse Scale</h3>
+                <!-- Morse scale implementation goes here -->
+            </div>
+            <div>
+                <h3>Infection Risk Assessment</h3>
+                <!-- Infection risk assessment implementation goes here -->
+            </div>
         </section>
-        <section id="care-plan-generation">
+        <section id="care-plan">
             <h2>Care Plan Generation</h2>
-            <div id="care-plan"></div>
+            <p>Automatically generate care plans based on evaluations.</p>
+            <!-- Care plan generation logic goes here -->
         </section>
         <section id="device-management">
             <h2>Device Management</h2>
-            <div id="device-list"></div>
+            <p>Monitor and manage medical devices.</p>
+            <!-- Device management functionalities go here -->
         </section>
         <section id="alerts-dashboard">
             <h2>Alerts Dashboard</h2>
-            <div id="alerts"></div>
+            <p>View and manage alerts related to patient care.</p>
+            <!-- Alerts dashboard functionalities go here -->
         </section>
     </main>
     <footer>
-        <p>© 2026 CareRisk Application</p>
+        <p>&copy; 2026 CareRisk Application</p>
     </footer>
-    <script src="scripts.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
