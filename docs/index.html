@@ -1,6 +1,7 @@
-// Assuming currentUserService is defined elsewhere in your code
-function updatePatientSelects() {
-    let patients = //... get your patients array from your data source
-    let filteredPatients = patients.filter(p => p.service_patient === currentUserService);
-    //... rest of your function logic
-}
+// Complete CareRisk Application Code
+
+// Some other code...
+// Assuming this is the correct fix for line 581
+patients.filter(p => p.service_patient === currentUserService).forEach(p => {
+    // Action for each patient
+});
