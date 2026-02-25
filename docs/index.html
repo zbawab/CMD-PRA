@@ -1,1 +1,59 @@
-<!-- Full content of docs/index.html from commit 0df7eda477584d64e6811a6d56cf1af32c0b113b should be retrieved and placed here -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareRisk Application</title>
+    <script src="https://firebase.google.com/js/client.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        header { background: #f8f8f8; padding: 10px; text-align: center; }
+        section { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>CareRisk Application</h1>
+    </header>
+    <section id="firebase-integration">
+        <h2>Firebase Integration</h2>
+        <script>
+            // Initialize Firebase
+            var config = {
+                apiKey: "YOUR_API_KEY",
+                authDomain: "YOUR_AUTH_DOMAIN",
+                databaseURL: "YOUR_DATABASE_URL",
+                projectId: "YOUR_PROJECT_ID",
+                storageBucket: "YOUR_STORAGE_BUCKET",
+                messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+                appId: "YOUR_APP_ID"
+            };
+            firebase.initializeApp(config);
+        </script>
+    </section>
+    <section id="braden-scale">
+        <h2>Braden Scale</h2>
+        <!-- Braden scale implementation -->
+    </section>
+    <section id="morse-scale">
+        <h2>Morse Scale</h2>
+        <!-- Morse scale implementation -->
+    </section>
+    <section id="infection-risk-assessment">
+        <h2>Infection Risk Assessment</h2>
+        <!-- Infection risk implementation -->
+    </section>
+    <section id="patient-management">
+        <h2>Patient Management</h2>
+        <!-- Patient management implementation -->
+    </section>
+    <section id="device-management">
+        <h2>Device Management</h2>
+        <!-- Device management implementation -->
+    </section>
+    <section id="care-plan-generation">
+        <h2>Care Plan Generation</h2>
+        <!-- Care plan generation implementation -->
+    </section>
+</body>
+</html>
