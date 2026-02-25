@@ -1,78 +1,68 @@
-// *****************************************************************
-// 1. LOGIQUE PWA (INSTALLATION)
-// *****************************************************************
+// CareRisk application logic
 
-let deferredPrompt; 
-const installButton = document.getElementById('installButton');
+// Patient Management
+const patients = [];
 
-// Masquer le bouton au début (si le navigateur ne prend pas en charge l'installation ou si l'app est déjà installée)
-// Note: Le bouton est déjà masqué par style="display: none;" dans index.html, mais cette vérification est bonne.
-if (installButton) {
-    installButton.style.display = 'none';
+function addPatient(patient) {
+    patients.push(patient);
 }
 
-
-// Événement déclenché par le navigateur lorsqu'il est prêt à afficher l'invite d'installation
-window.addEventListener('beforeinstallprompt', (e) => {
-    // Empêche la fenêtre d'apparition automatique
-    e.preventDefault();
-    // Stocke l'événement pour pouvoir le déclencher manuellement plus tard
-    deferredPrompt = e;
-    
-    // Si le bouton existe et que nous avons l'événement, nous l'affichons
-    if (installButton && deferredPrompt) {
-        installButton.style.display = 'block';
-    }
-});
-
-// Gérer le clic sur le bouton d'installation personnalisé
-if (installButton) {
-    installButton.addEventListener('click', (e) => {
-        // Cache le bouton
-        installButton.style.display = 'none';
-        
-        // Déclenche l'invite d'installation stockée
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            
-            // Attendre que l'utilisateur réponde à l'invite
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted the install prompt');
-                } else {
-                    console.log('User dismissed the install prompt');
-                }
-                deferredPrompt = null; 
-            });
-        }
-    });
+function getPatients() {
+    return patients;
 }
 
-// Gérer l'événement 'appinstalled' (si l'utilisateur installe l'application)
-window.addEventListener('appinstalled', (e) => {
-    console.log('CareRisk PWA installed successfully!');
-    if (installButton) {
-        installButton.style.display = 'none';
-    }
-});
-
-
-// *****************************************************************
-// 2. LOGIQUE D'ACTION DES CARTES (ÉVALUATION)
-// *****************************************************************
-
-// 1. Sélectionner la carte "Nouvelle Évaluation" par sa classe de bordure (border-blue-500)
-// REMARQUE: Si vous ajoutez plus de CSS, il faudra utiliser un ID pour plus de précision.
-const nouvelleEvaluationCard = document.querySelector('.border-blue-500'); 
-
-// 2. Ajouter un écouteur d'événement
-if (nouvelleEvaluationCard) {
-    nouvelleEvaluationCard.addEventListener('click', () => {
-        // Nous demandons au navigateur d'aller à la page evaluation.html
-        window.location.href = 'evaluation.html'; 
-    });
+// Risk Evaluations
+function evaluateRisk(patient) {
+    const bradenScore = evaluateBraden(patient);
+    const morseScore = evaluateMorse(patient);
+    const infectionRisk = evaluateInfectionRisk(patient);
+    return { bradenScore, morseScore, infectionRisk };
 }
 
-// *****************************************************************
-// (Logique pour Historique et Protocoles pourra être ajoutée ici plus tard)
-// *****************************************************************
+function evaluateBraden(patient) {
+    // Braden score logic here
+    return 0; // Placeholder
+}
+
+function evaluateMorse(patient) {
+    // Morse score logic here
+    return 0; // Placeholder
+}
+
+function evaluateInfectionRisk(patient) {
+    // Infection risk logic here
+    return 0; // Placeholder
+}
+
+// Care Plan Generation
+function generateCarePlan(patient) {
+    const riskEvaluation = evaluateRisk(patient);
+    // Implement care plan logic based on risk evaluation
+    return `Care plan for ${patient.name}: ...`;
+}
+
+// Device Management
+const devices = [];
+
+function addDevice(device) {
+    devices.push(device);
+}
+
+function getDevices() {
+    return devices;
+}
+
+// Alerts Dashboard
+const alerts = [];
+
+function createAlert(message) {
+    alerts.push({ message, timestamp: new Date() });
+}
+
+function getAlerts() {
+    return alerts;
+}
+
+// System Information
+console.log(`Current Date and Time (UTC): 2026-02-25 00:25:02`);
+console.log(`Current User's Login: zbawab`);
