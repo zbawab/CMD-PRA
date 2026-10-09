@@ -12,7 +12,7 @@ function getPatients() {
 }
 
 // Risk Evaluations
-function evaluateRisk(patient) {
+function evaluateRisk(patient = {}) {
     const bradenScore = evaluateBraden(patient);
     const morseScore = evaluateMorse(patient);
     const infectionRisk = evaluateInfectionRisk(patient);
@@ -21,24 +21,60 @@ function evaluateRisk(patient) {
 
 function evaluateBraden(patient) {
     // Braden score logic here
-    return 0; // Placeholder
+    return Number(patient?.bradenScore ?? 0);
 }
 
 function evaluateMorse(patient) {
     // Morse score logic here
-    return 0; // Placeholder
+    return Number(patient?.morseScore ?? 0);
 }
 
 function evaluateInfectionRisk(patient) {
     // Infection risk logic here
-    return 0; // Placeholder
+    return Number(patient?.infectionRisk ?? 0);
 }
 
 // Care Plan Generation
-function generateCarePlan(patient) {
+function generateCarePlan(patient = {}) {
+    const patientName = patient.name || 'Patient';
     const riskEvaluation = evaluateRisk(patient);
-    // Implement care plan logic based on risk evaluation
-    return `Care plan for ${patient.name}: ...`;
+    const totalRisk = (riskEvaluation.bradenScore || 0) + (riskEvaluation.morseScore || 0) + (riskEvaluation.infectionRisk || 0);
+
+    let riskLevel = 'Faible risque';
+    let actions = [
+        'Surveillance standard et éducation du patient.',
+        'Vérification quotidienne de l’état général et des signes vitaux.'
+    ];
+
+    if (totalRisk >= 50) {
+        riskLevel = 'Risque élevé';
+        actions = [
+            'Évaluation clinique immédiate et plan de soins individualisé.',
+            'Surveillance rapprochée au moins toutes les 2 heures.',
+            'Prévention des chutes et des escarres renforcée.',
+            'Contrôle de la température, du débit et du site invasif si présent.'
+        ];
+    } else if (totalRisk >= 25) {
+        riskLevel = 'Risque modéré';
+        actions = [
+            'Surveillance renforcée et mise en place de protocoles de prévention de base.',
+            'Aide technique ou mobilisation adaptée selon le besoin.',
+            'Suivi de la nutrition et de la peau.'
+        ];
+    }
+
+    return [
+        `Plan de soins pour ${patientName}:`,
+        `Niveau de risque: ${riskLevel}.`,
+        `Score global estimé: ${totalRisk}.`,
+        '',
+        'Actions prioritaires:',
+        ...actions.map((action, index) => `${index + 1}. ${action}`)
+    ].join('\n');
+}
+
+if (typeof window !== 'undefined') {
+    window.generateCarePlan = generateCarePlan;
 }
 
 // Device Management
