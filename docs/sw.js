@@ -1,4 +1,4 @@
-const CACHE_NAME = 'carerisk-v1.0.3'; // Incrémentez la version
+const CACHE_NAME = 'carerisk-v1.0.4'; // Incrémentez la version pour forcer la mise à jour du cache
 const urlsToCache = [
   './',
   './index.html',
@@ -74,8 +74,6 @@ self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.match(req).then(function(response) {
       return response || fetch(req).then(function(networkResponse) {
-        // Optionnel : mettre en cache les assets
-        // caches.open(CACHE_NAME).then(cache => cache.put(req, networkResponse.clone()));
         return networkResponse;
       }).catch(function() {
         return response;
